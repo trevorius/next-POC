@@ -1,0 +1,63 @@
+# Cursor AI Configuration for Next.js Project
+
+## Project Context
+
+- Next.js 15 with App Router
+- TurboPack
+- always use javascript
+- Bootstrap UI framework
+- Server Components
+- Native fetch API for data fetching
+- No state management library
+- No animation libraries
+- No complex interactions
+
+## Preferred Behaviors
+
+- Prioritize server-side component suggestions
+- Focus on Bootstrap integration
+- Suggest simple, performant solutions
+- Avoid complex state management patterns
+
+## Code Style
+
+- Use modern JavaScript/TypeScript
+- Follow Next.js best practices
+- Implement Bootstrap classes correctly
+- Maintain clean, documented code
+
+## AI Assistance Rules
+
+1. Prioritize:
+
+   - Server component implementations
+   - Bootstrap class usage
+   - Performance optimizations
+   - Clean code structure
+
+2. Avoid Suggesting:
+
+   - Complex state management solutions
+   - Animation libraries
+   - Custom styling when Bootstrap classes suffice
+   - Client-side heavy implementations
+
+3. Code Generation:
+
+   - Include JSDoc comments for complex functions
+   - Add type hints where helpful
+   - Include error handling
+   - Follow Next.js naming conventions
+
+4. Documentation:
+   - Explain key implementation decisions
+   - Note Bootstrap class usage
+   - Highlight server/client component boundaries
+   - Include performance considerations
+
+## File Organization
+
+- Follow Next.js 15 app directory structure
+- Keep components modular
+- Separate server and client concerns
+- Maintain clear import/export patterns
