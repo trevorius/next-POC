@@ -1,0 +1,8 @@
+@import "bootstrap/scss/bootstrap";
+
+.customButton {
+  @extend .btn;
+  &:hover {
+    transform: translateY(-1px);
+  }
+} 

@@ -38,6 +38,7 @@ export default async function Home() {
           <li>Save and see your changes instantly.</li>
         </ol>
         <div>{asyncData}</div>
+        <div className='bg-primary'>test 2</div>
 
         <div className={styles.ctas}>
           <a

@@ -1,0 +1,20 @@
+// Import your variables
+@import "./variables.scss";
+// Import Bootstrap
+@import "bootstrap/scss/bootstrap";
+
+
+// Global styles
+:root {
+  --primary-color: #{$primary-color};
+  --secondary-color: #{$secondary-color};
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+} 
+.test {
+  background-color: $test-color;
+}
