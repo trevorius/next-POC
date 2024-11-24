@@ -1,4 +1,6 @@
 import Image from 'next/image';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 import styles from './page.module.css';
 
 export default async function Home() {
@@ -38,7 +40,14 @@ export default async function Home() {
           <li>Save and see your changes instantly.</li>
         </ol>
         <div>{asyncData}</div>
-        <div className='bg-primary'>test 2</div>
+        <OverlayTrigger
+          placement='right'
+          overlay={<Tooltip>test tooltip</Tooltip>}
+        >
+          <div className='bg-primary text-white p-2 rounded rounded-2'>
+            test 2
+          </div>
+        </OverlayTrigger>
 
         <div className={styles.ctas}>
           <a
