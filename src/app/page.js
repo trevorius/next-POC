@@ -7,7 +7,10 @@ export default async function Home() {
   // const getAsyncData = async () => {
   // 'use server';
   const response = await fetch('https://pokeapi.co/api/v2/pokemon', {
-    cache: 'no-store',
+    // cache: 'no-store',
+    // next: {
+    // revalidate: 10,
+    // },
   });
   const data = await response.json();
   console.log(data);
