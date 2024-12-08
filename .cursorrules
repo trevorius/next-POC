@@ -12,6 +12,7 @@
 - No state management library
 - No animation libraries
 - No complex interactions
+- Prisma ORM for database access
 
 ## Preferred Behaviors
 
@@ -25,7 +26,6 @@
 
 - Use modern JavaScript/TypeScript
 - Follow Next.js best practices
-- Implement Bootstrap classes correctly
 - Maintain clean, documented code
 
 ## AI Assistance Rules
@@ -33,7 +33,6 @@
 1. Prioritize:
 
    - Server component implementations
-   - Bootstrap class usage
    - Performance optimizations
    - Clean code structure
 
@@ -41,7 +40,6 @@
 
    - Complex state management solutions
    - Animation libraries
-   - Custom styling when Bootstrap classes suffice
    - Client-side heavy implementations
 
 3. Code Generation:
@@ -54,7 +52,6 @@
 4. Documentation:
 
    - Explain key implementation decisions
-   - Note Bootstrap class usage
    - Highlight server/client component boundaries
    - Include performance considerations
 
