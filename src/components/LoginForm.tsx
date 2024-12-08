@@ -39,6 +39,7 @@ export default function LoginForm(): React.ReactElement {
         router.refresh();
       }
     } catch (error) {
+      console.error(error);
       setError('An error occurred');
     }
   }

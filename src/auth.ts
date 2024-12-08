@@ -27,8 +27,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: 'Password', type: 'password' },
       },
       async authorize(
-        credentials: Partial<Record<'username' | 'password', unknown>>,
-        request: Request
+        credentials: Partial<Record<'username' | 'password', unknown>>
       ) {
         // Simple credentials check against environment variables
         const isValid =

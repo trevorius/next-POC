@@ -13,8 +13,6 @@ interface PokemonApiResponse {
 }
 
 export default async function Home(): Promise<React.ReactElement> {
-  console.log('Hello from the console');
-
   const response = await fetch('https://pokeapi.co/api/v2/pokemon', {
     // cache: 'no-store',
     // next: {
@@ -22,7 +20,6 @@ export default async function Home(): Promise<React.ReactElement> {
     // },
   });
   const data: PokemonApiResponse = await response.json();
-  console.log(data);
 
   const asyncData = JSON.stringify(data);
 
