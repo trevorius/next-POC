@@ -41,6 +41,9 @@ export default async function Home(): Promise<React.ReactElement> {
           <li>Save and see your changes instantly.</li>
         </ol>
         <div>{asyncData}</div>
+        <div className='flex min-h-screen items-center justify-center'>
+          <h1 className='text-3xl font-bold'>Hello Tailwind!</h1>
+        </div>
 
         <div className={styles.ctas}>
           <a
