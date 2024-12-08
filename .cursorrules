@@ -69,6 +69,7 @@
    - include the ticket title if applicable
    - ALWAYS start the message with a gitmoji followed by a colon and text corresponding to the emoji.
    - Use Gitmojis
+   - do not always use :sparkles: for every commit. use the gitmoji site to find the best emoji for the commit.
    - message should be no more than 200 characters
 
 ## File Organization
