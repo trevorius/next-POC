@@ -1,24 +1,30 @@
 import Image from 'next/image';
+import React from 'react';
 import styles from './page.module.css';
 
-export default async function Home() {
+interface PokemonApiResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: Array<{
+    name: string;
+    url: string;
+  }>;
+}
+
+export default async function Home(): Promise<React.ReactElement> {
   console.log('Hello from the console');
 
-  // const getAsyncData = async () => {
-  // 'use server';
   const response = await fetch('https://pokeapi.co/api/v2/pokemon', {
     // cache: 'no-store',
     // next: {
     // revalidate: 10,
     // },
   });
-  const data = await response.json();
+  const data: PokemonApiResponse = await response.json();
   console.log(data);
-  // };
 
   const asyncData = JSON.stringify(data);
-
-  // const asyncData = await getAsyncData();
 
   return (
     <div className={styles.page}>
@@ -33,7 +39,7 @@ export default async function Home() {
         />
         <ol>
           <li>
-            Get started by editing <code>src/app/page.js</code>.
+            Get started by editing <code>src/app/page.tsx</code>.
           </li>
           <li>Save and see your changes instantly.</li>
         </ol>
