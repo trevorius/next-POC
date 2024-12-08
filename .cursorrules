@@ -67,6 +67,7 @@
    - include the ticket number if applicable
    - include the ticket title if applicable
    - ALWAYS start the message with a gitmoji followed by a colon and text corresponding to the emoji.
+   - Use Gitmojis
    - message should be no more than 200 characters
 
 ## File Organization
