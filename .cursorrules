@@ -2,10 +2,11 @@
 
 ## Project Context
 
-- Next.js 15 with App Router
+- Next.js 15 with App Router and src directory
+- always use src directory
 - TurboPack
-- always use javascript
-- Bootstrap UI framework
+- AuthJS
+- always use typescript
 - Server Components
 - Native fetch API for data fetching
 - No state management library
@@ -15,7 +16,8 @@
 ## Preferred Behaviors
 
 - Prioritize server-side component suggestions
-- Focus on Bootstrap integration
+- Always use the src directory for project code
+- always use the app directory for the routes
 - Suggest simple, performant solutions
 - Avoid complex state management patterns
 
