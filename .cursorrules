@@ -50,10 +50,22 @@
    - Follow Next.js naming conventions
 
 4. Documentation:
+
    - Explain key implementation decisions
    - Note Bootstrap class usage
    - Highlight server/client component boundaries
    - Include performance considerations
+
+5. commit messages:
+   - use imperative, present tense
+   - include the file name
+   - include a short description of the changes
+   - include the issue number if applicable
+   - include the user who requested the change if applicable
+   - include the ticket number if applicable
+   - include the ticket title if applicable
+   - ALWAYS start the message with a gitmoji followed by a colon and text corresponding to the emoji.
+   - message should be no more than 200 characters
 
 ## File Organization
 
