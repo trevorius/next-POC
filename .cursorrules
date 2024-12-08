@@ -26,6 +26,7 @@
 
 - Use modern JavaScript/TypeScript
 - Follow Next.js best practices
+- Implement tailwind classes correctly
 - Maintain clean, documented code
 
 ## AI Assistance Rules
@@ -33,6 +34,7 @@
 1. Prioritize:
 
    - Server component implementations
+   - tailwind class usage
    - Performance optimizations
    - Clean code structure
 
@@ -40,6 +42,7 @@
 
    - Complex state management solutions
    - Animation libraries
+   - Custom styling when tailwind classes do not suffice
    - Client-side heavy implementations
 
 3. Code Generation:
@@ -52,6 +55,7 @@
 4. Documentation:
 
    - Explain key implementation decisions
+   - Note tailwind class usage
    - Highlight server/client component boundaries
    - Include performance considerations
 
