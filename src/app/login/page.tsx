@@ -1,6 +1,7 @@
 import LoginForm from '@/components/LoginForm';
+import React from 'react';
 
-export default function LoginPage() {
+export default function LoginPage(): React.ReactElement {
   return (
     <div className='container mt-5'>
       <div className='row justify-content-center'>
