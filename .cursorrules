@@ -60,6 +60,7 @@
    - Include performance considerations
 
 5. commit messages:
+
    - use imperative, present tense
    - include the file name
    - include a short description of the changes
@@ -71,6 +72,10 @@
    - Use Gitmojis
    - do not always use :sparkles: for every commit. use the gitmoji site to find the best emoji for the commit.
    - message should be no more than 200 characters
+
+6. prisma:
+   - prisma schema file is /prisma/schema.prisma
+   - prisma client is in /src/lib/prisma.ts
 
 ## File Organization
 
