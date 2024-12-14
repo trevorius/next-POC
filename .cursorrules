@@ -69,10 +69,10 @@
    - include the ticket number if applicable
    - include the ticket title if applicable
    - ALWAYS start the message with a gitmoji followed by a colon and text corresponding to the emoji.
+   - use gitmoji.dev for reference
    - Use Gitmojis
    - do not always use :sparkles: for every commit. use the gitmoji site to find the best emoji for the commit.
-   - message should be no more than 200 characters
-   - use gitmoji.dev for reference
+   - message should be no more than 100 characters
 
 6. prisma:
    - prisma schema file is /prisma/schema.prisma
