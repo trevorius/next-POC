@@ -1,5 +1,5 @@
+import LogoutButton from '@/components/LogoutButton';
 import React from 'react';
-// import styles from './page.module.css';
 
 interface PokemonApiResponse {
   count: number;
@@ -23,10 +23,14 @@ export default async function Home(): Promise<React.ReactElement> {
   const asyncData = JSON.stringify(data);
 
   return (
-    <div>
-      <h1 className='text-3xl font-bold'>Hello world!</h1>
-
-      <div>{asyncData}</div>
+    <div className='relative min-h-screen p-8'>
+      <LogoutButton />
+      <div className='max-w-4xl mx-auto'>
+        <h1 className='text-3xl font-bold mb-8'>Hello world!</h1>
+        <div className='bg-card p-6 rounded-lg shadow'>
+          <pre className='whitespace-pre-wrap'>{asyncData}</pre>
+        </div>
+      </div>
     </div>
   );
 }

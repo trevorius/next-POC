@@ -1,5 +1,9 @@
 'use client';
 
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { getCsrfToken, signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import React, { FormEvent, useEffect, useState } from 'react';
@@ -8,6 +12,7 @@ export default function LoginForm(): React.ReactElement {
   const router = useRouter();
   const [error, setError] = useState<string>('');
   const [csrfToken, setCsrfToken] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const getCsrf = async () => {
@@ -21,6 +26,7 @@ export default function LoginForm(): React.ReactElement {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setIsLoading(true);
     const formData = new FormData(event.currentTarget);
 
     try {
@@ -41,44 +47,42 @@ export default function LoginForm(): React.ReactElement {
     } catch (error) {
       console.error(error);
       setError('An error occurred');
+    } finally {
+      setIsLoading(false);
     }
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className='space-y-6'>
       <input name='csrfToken' type='hidden' defaultValue={csrfToken} />
       {error && (
-        <div className='alert alert-danger' role='alert'>
-          {error}
-        </div>
+        <Alert variant='destructive'>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       )}
-      <div className='mb-3'>
-        <label htmlFor='username' className='form-label'>
-          Username
-        </label>
-        <input
-          type='text'
-          className='form-control'
+      <div className='space-y-2'>
+        <Label htmlFor='username'>Username</Label>
+        <Input
           id='username'
           name='username'
+          type='text'
           required
+          autoComplete='username'
         />
       </div>
-      <div className='mb-3'>
-        <label htmlFor='password' className='form-label'>
-          Password
-        </label>
-        <input
-          type='password'
-          className='form-control'
+      <div className='space-y-2'>
+        <Label htmlFor='password'>Password</Label>
+        <Input
           id='password'
           name='password'
+          type='password'
           required
+          autoComplete='current-password'
         />
       </div>
-      <button type='submit' className='btn btn-primary w-100'>
-        Sign In
-      </button>
+      <Button type='submit' className='w-full' disabled={isLoading}>
+        {isLoading ? 'Signing in...' : 'Sign In'}
+      </Button>
     </form>
   );
 }
