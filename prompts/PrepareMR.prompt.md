@@ -4,18 +4,23 @@ in the preprompt message you were given the branch to merge and the branch to me
 
 # confirm work is ready to merge
 
+prepare your self by analysing what scripts are available in project.json
+
 1. run prettier
 
+- if prettier is installed and has a config file, run it
 - if the prettier fails, fix the issues and repeat step 1
 - if the prettier succeeds, move to next step
 
 2. run eslint
 
+- if eslint is installed and has a config file, run it
 - if the eslint fails, fix the issues and repeat step 2
 - if the eslint succeeds, move to next step
 
 3. run tests
 
+- if there is a test script, run it
 - if the tests fail, fix the issues and repeat step 2
 - if the tests succeed, move to next step
 
