@@ -10,7 +10,7 @@
 - Server Components
 - Native fetch API for data fetching
 - No state management library
-- No animation libraries
+- Motion for animations
 - No complex interactions
 - Prisma ORM for database access
 
@@ -72,6 +72,7 @@
    - Use Gitmojis
    - do not always use :sparkles: for every commit. use the gitmoji site to find the best emoji for the commit.
    - message should be no more than 200 characters
+   - use gitmoji.dev for reference
 
 6. prisma:
    - prisma schema file is /prisma/schema.prisma
