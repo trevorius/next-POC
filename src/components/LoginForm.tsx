@@ -27,12 +27,14 @@ export default function LoginForm(): React.ReactElement {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsLoading(true);
+    setError('');
+
     const formData = new FormData(event.currentTarget);
 
     try {
       const response = await signIn('credentials', {
-        username: formData.get('username') as string,
-        password: formData.get('password') as string,
+        username: formData.get('email'),
+        password: formData.get('password'),
         csrfToken: csrfToken,
         redirect: false,
         callbackUrl: '/',
@@ -61,13 +63,13 @@ export default function LoginForm(): React.ReactElement {
         </Alert>
       )}
       <div className='space-y-2'>
-        <Label htmlFor='username'>Username</Label>
+        <Label htmlFor='email'>Email</Label>
         <Input
-          id='username'
-          name='username'
-          type='text'
+          id='email'
+          name='email'
+          type='email'
           required
-          autoComplete='username'
+          autoComplete='email'
         />
       </div>
       <div className='space-y-2'>
