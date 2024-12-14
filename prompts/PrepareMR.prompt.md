@@ -30,7 +30,7 @@ in the preprompt message you were given the branch to merge and the branch to me
 
 1. analyse commit messages
 2. analyse code differences
-3. write a merge request message
+3. write a merge request message in a mark down code block so it is copyable and pasteable into the merge request message on github or gitlab
 
 - use gitmojis to describe the changes use (gitmoji.dev as a reference website)
 - use markdown to format the message

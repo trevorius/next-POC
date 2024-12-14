@@ -1,9 +1,23 @@
 import { PrismaClient } from '@prisma/client';
-import NextAuth from 'next-auth';
+import NextAuth, { DefaultSession } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import { sanitizeUser, verifyPassword } from './lib/auth.utils';
+import { AuthUser, sanitizeUser, verifyPassword } from './lib/auth.utils';
+
+declare module 'next-auth' {
+  interface Session {
+    user: DefaultSession['user'] & {
+      id: string;
+      isSuperAdmin: boolean;
+    };
+  }
+}
 
 const prisma = new PrismaClient();
+
+interface LoginCredentials {
+  username: string;
+  password: string;
+}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: {
@@ -15,32 +29,38 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         username: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials) {
+      async authorize(credentials): Promise<AuthUser | null> {
+        if (!credentials?.username || !credentials?.password) {
+          throw new Error('Invalid credentials');
+        }
+
+        const { username, password } = credentials as LoginCredentials;
+
         try {
           const user = await prisma.user.findUnique({
-            where: { email: credentials?.username },
+            where: { email: username },
           });
 
           if (!user) {
-            console.log('User not found:', credentials?.username);
-            return null;
+            throw new Error('Invalid credentials');
           }
 
           const isValidPassword = verifyPassword(
-            credentials?.password as string,
+            password,
             user.password,
             user.salt
           );
 
           if (!isValidPassword) {
-            console.log('Invalid password for user:', credentials?.username);
-            return null;
+            throw new Error('Invalid credentials');
           }
 
           return sanitizeUser(user);
         } catch (error) {
-          console.error('Auth error:', error);
-          return null;
+          if (error instanceof Error) {
+            throw new Error(error.message);
+          }
+          throw new Error('Authentication failed');
         }
       },
     }),
@@ -49,7 +69,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.isSuperAdmin = user.isSuperAdmin;
+        token.isSuperAdmin = (user as AuthUser).isSuperAdmin;
       }
       return token;
     },

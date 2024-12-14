@@ -5,7 +5,16 @@ export type User = Prisma.UserGetPayload<{ select: null }>;
 export type UserCreateInput = Prisma.UserCreateInput;
 export type UserUpdateInput = Prisma.UserUpdateInput;
 
-// Post types
-export type Post = Prisma.PostGetPayload<{ select: null }>;
-export type PostCreateInput = Prisma.PostCreateInput;
-export type PostUpdateInput = Prisma.PostUpdateInput;
+// Organization types
+export type Organization = Prisma.OrganizationGetPayload<{ select: null }>;
+export type OrganizationCreateInput = Prisma.OrganizationCreateInput;
+export type OrganizationUpdateInput = Prisma.OrganizationUpdateInput;
+
+// OrganizationMember types
+export type OrganizationMember = Prisma.OrganizationMemberGetPayload<{
+  select: null;
+}>;
+export type OrganizationMemberCreateInput =
+  Prisma.OrganizationMemberCreateInput;
+export type OrganizationMemberUpdateInput =
+  Prisma.OrganizationMemberUpdateInput;
