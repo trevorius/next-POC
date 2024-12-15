@@ -28,6 +28,7 @@
 - Follow Next.js best practices
 - Implement tailwind classes correctly
 - Maintain clean, documented code
+- Apply TDD principles and write tests for all new features before implementing them.
 
 ## AI Assistance Rules
 
@@ -84,3 +85,47 @@
 - Keep components modular
 - Separate server and client concerns
 - Maintain clear import/export patterns
+
+# commit Message examples
+
+reference : https://gitmoji.dev/
+
+- :sparkles: : Add new feature
+- :bug: : Fix bug
+- :memo: : Add documentation
+- :fire: : Remove code
+- :art: : Improve code readability
+- :rocket: : Improve performance
+- :green_heart: : Fix CI build
+- :construction: : Work in progress
+- :recycle: : Refactor code
+- :bookmark: : Release new version
+- :white_check_mark: : add code that makes the tests pass
+- :test_tube: : add failing tests
+- :hammer: : add code that fixes the tests
+- :heavy_plus_sign: : add a new dependency or library
+- :heavy_minus_sign: : remove a dependency or library
+- :lock: : add security features
+- :speech_balloon: : add comments
+- :rotating_light: : fix linting errors
+- :recycle: : refactor code
+- :arrow_up: : update dependencies
+- :arrow_down: : downgrade dependencies
+- :pencil2: : fix typos
+- :alien: : add code for external API
+- :robot: : add code for AI and automation
+- :dizzy: : add code for animation
+- :lipstick: : add code for styling
+- :card_file_box: : add code for database
+- :loud_sound: : add logging
+- :speech_left: : add code for speech recognition
+- :speech_right: : add code for speech synthesis
+- :speech_balloon: : add code for speech to text
+- :speech_left: : add code for text to speech
+- :children_crossing: : add code for accessibility
+- :clown_face: : add code for mocking
+- :mag: : add code for SEO
+- :seedling: : add code for seeding
+- :goal_net: : error handling and catching
+- :wastebasket: : deprecate code
+- :coffin: : remove code
