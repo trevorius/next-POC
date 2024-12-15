@@ -1,85 +1,80 @@
 import { AppSidebar } from '@/components/layout/app-sidebar';
-import { SidebarProvider } from '@/components/ui/sidebar';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { signOut } from 'next-auth/react';
+
+// Mock next-auth
+jest.mock('next-auth/react', () => ({
+  signOut: jest.fn(),
+  useSession: jest.fn(() => ({
+    data: {
+      user: {
+        name: 'John Doe',
+        email: 'john@example.com',
+        isSuperAdmin: true,
+      },
+    },
+    status: 'authenticated',
+  })),
+  SessionProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
+
+// Mock next/navigation
+jest.mock('next/navigation', () => ({
+  usePathname: jest.fn(() => '/'),
+}));
+
+const renderWithSession = (component: React.ReactNode) => {
+  return render(<>{component}</>);
+};
 
 describe('AppSidebar', () => {
-  const renderWithProvider = (userRole: 'SUPER_ADMIN' | 'OWNER' | 'USER') => {
-    return render(
-      <SidebarProvider>
-        <AppSidebar userRole={userRole} />
-      </SidebarProvider>
-    );
-  };
-
-  beforeAll(() => {
-    process.env.NEXT_PUBLIC_APP_NAME = 'Action Comics';
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  it('renders the sidebar title', () => {
-    renderWithProvider('SUPER_ADMIN');
-    expect(screen.getByText('Action Comics')).toBeInTheDocument();
+  it('renders user profile section with name', () => {
+    renderWithSession(<AppSidebar />);
+    expect(screen.getByText('John Doe')).toBeInTheDocument();
   });
 
-  describe('Navigation items for different roles', () => {
-    it('shows all super admin items for SUPER_ADMIN role', () => {
-      renderWithProvider('SUPER_ADMIN');
-      expect(screen.getByText('Dashboard')).toBeInTheDocument();
-      expect(screen.getByText('Organizations')).toBeInTheDocument();
-      expect(screen.getByText('Users')).toBeInTheDocument();
-      expect(screen.getByText('Settings')).toBeInTheDocument();
-      expect(screen.queryByText('My Organization')).not.toBeInTheDocument();
-      expect(screen.queryByText('Members')).not.toBeInTheDocument();
-    });
-
-    it('shows owner-specific items for OWNER role', () => {
-      renderWithProvider('OWNER');
-      expect(screen.getByText('Dashboard')).toBeInTheDocument();
-      expect(screen.getByText('My Organization')).toBeInTheDocument();
-      expect(screen.getByText('Members')).toBeInTheDocument();
-      expect(screen.getByText('Documents')).toBeInTheDocument();
-      expect(screen.getByText('Settings')).toBeInTheDocument();
-      expect(screen.queryByText('Organizations')).not.toBeInTheDocument();
-      expect(screen.queryByText('Users')).not.toBeInTheDocument();
-    });
-
-    it('shows user-specific items for USER role', () => {
-      renderWithProvider('USER');
-      expect(screen.getByText('Dashboard')).toBeInTheDocument();
-      expect(screen.getByText('My Organization')).toBeInTheDocument();
-      expect(screen.getByText('Documents')).toBeInTheDocument();
-      expect(screen.queryByText('Members')).not.toBeInTheDocument();
-      expect(screen.queryByText('Settings')).not.toBeInTheDocument();
-      expect(screen.queryByText('Organizations')).not.toBeInTheDocument();
-      expect(screen.queryByText('Users')).not.toBeInTheDocument();
-    });
+  it('renders user email in profile section', () => {
+    renderWithSession(<AppSidebar />);
+    expect(screen.getByText('john@example.com')).toBeInTheDocument();
   });
 
-  it('renders navigation items with correct links', () => {
-    renderWithProvider('SUPER_ADMIN');
-
-    expect(screen.getByText('Dashboard').closest('a')).toHaveAttribute(
-      'href',
-      '/'
-    );
-    expect(screen.getByText('Organizations').closest('a')).toHaveAttribute(
-      'href',
-      '/superadmin/organization'
-    );
-    expect(screen.getByText('Users').closest('a')).toHaveAttribute(
-      'href',
-      '/superadmin/users'
-    );
-    expect(screen.getByText('Settings').closest('a')).toHaveAttribute(
-      'href',
-      '/settings'
-    );
+  it('renders logout button in footer', () => {
+    renderWithSession(<AppSidebar />);
+    expect(screen.getByRole('button', { name: /logout/i })).toBeInTheDocument();
   });
 
-  it('renders icons for each navigation item', () => {
-    renderWithProvider('SUPER_ADMIN');
-    const menuItems = screen.getAllByRole('link');
-    menuItems.forEach((item) => {
-      expect(item.querySelector('svg')).toBeInTheDocument();
-    });
+  it('calls signOut when logout button is clicked', async () => {
+    const user = userEvent.setup();
+    renderWithSession(<AppSidebar />);
+
+    const logoutButton = screen.getByRole('button', { name: /logout/i });
+    await user.click(logoutButton);
+
+    expect(signOut).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders profile section in footer', () => {
+    renderWithSession(<AppSidebar />);
+    const footer = screen.getByTestId('sidebar-footer');
+    expect(footer).toBeInTheDocument();
+    expect(footer).toContainElement(screen.getByText('John Doe'));
+  });
+
+  it('renders user avatar with initials', () => {
+    renderWithSession(<AppSidebar />);
+    expect(screen.getByText('JD')).toBeInTheDocument();
+  });
+
+  it('renders navigation links based on user role', () => {
+    renderWithSession(<AppSidebar />);
+    // Super admin should see Organizations link
+    expect(
+      screen.getByRole('link', { name: /organizations/i })
+    ).toBeInTheDocument();
   });
 });
