@@ -17,15 +17,19 @@ describe('Authentication Flow', () => {
       email: 'test@example.com',
       name: 'Test User',
       password: 'hashedPassword123',
+      salt: 'mockedSalt',
+      isSuperAdmin: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
     prismaMock.user.create.mockResolvedValue(mockUser);
-
     const createdUser = await prismaMock.user.create({
       data: {
         email: 'test@example.com',
         name: 'Test User',
         password: 'hashedPassword123',
+        salt: 'mockedSalt',
       },
     });
 
