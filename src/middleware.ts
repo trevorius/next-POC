@@ -1,17 +1,24 @@
 import { auth } from '@/auth';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-export default auth(async function middleware(request: NextRequest) {
-  const session = await auth();
-  const isPublicPath =
-    request.nextUrl.pathname.startsWith('/login') ||
-    request.nextUrl.pathname.startsWith('/api/auth');
+export default auth((req) => {
+  const { nextUrl } = req;
+  const isLoggedIn = !!req.auth;
 
-  if (!isPublicPath && !session) {
-    return NextResponse.redirect(new URL('/login', request.nextUrl));
+  // Protect superadmin routes
+  if (
+    nextUrl.pathname.startsWith('/superadmin') ||
+    nextUrl.pathname.startsWith('/api/superadmin')
+  ) {
+    if (!req.auth?.user?.isSuperAdmin) {
+      return Response.redirect(new URL('/unauthorized', nextUrl));
+    }
   }
+
+  return NextResponse.next();
 });
 
+// Optionally, configure your matcher
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/superadmin/:path*', '/api/superadmin/:path*'],
 };
