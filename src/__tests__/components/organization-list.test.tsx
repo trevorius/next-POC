@@ -69,10 +69,6 @@ describe('OrganizationList', () => {
     },
   ];
 
-  const mockRouter = {
-    refresh: jest.fn(),
-  };
-
   beforeEach(() => {
     jest.clearAllMocks();
   });

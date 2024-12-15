@@ -109,7 +109,8 @@ export async function deleteOrganization(organizationId: string) {
     return await prisma.organization.delete({
       where: { id: organizationId },
     });
-  } catch (error) {
+  } catch (err) {
+    console.error(err);
     throw new Error('Organization not found');
   }
 }
