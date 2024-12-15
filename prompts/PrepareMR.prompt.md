@@ -180,9 +180,3 @@ Ctrl+K to generate a command
 - Execute seed script for initial data
 - Update environment variables for auth configuration
 ```
-
-### example 3 :
-
-```markdown
-
-```
