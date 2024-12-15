@@ -14,9 +14,11 @@ export default async function OrganizationManagement() {
   const organizations = await getOrganizations();
 
   return (
-    <div className='container mx-auto py-8'>
-      <div className='flex justify-between items-center mb-8'>
-        <h1 className='text-2xl font-bold'>Organization Management</h1>
+    <div className='container mx-auto p-8 space-y-8'>
+      <div className='flex items-center justify-between border-b pb-4'>
+        <h1 className='text-3xl font-bold tracking-tight pr-4'>
+          Organization Management
+        </h1>
         <CreateOrganizationDialog />
       </div>
       <OrganizationList organizations={organizations} />
