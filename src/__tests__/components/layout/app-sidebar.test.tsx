@@ -11,9 +11,13 @@ describe('AppSidebar', () => {
     );
   };
 
+  beforeAll(() => {
+    process.env.NEXT_PUBLIC_APP_NAME = 'Action Comics';
+  });
+
   it('renders the sidebar title', () => {
     renderWithProvider('SUPER_ADMIN');
-    expect(screen.getByText('Loi 25')).toBeInTheDocument();
+    expect(screen.getByText('Action Comics')).toBeInTheDocument();
   });
 
   describe('Navigation items for different roles', () => {

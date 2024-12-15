@@ -12,7 +12,7 @@ const config: Config = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   transform: {
-    '^.+\\.(t|j)sx?$': ['@swc/jest'],
+    '^.+\\.(t|j)sx?$': '@swc/jest',
   },
   transformIgnorePatterns: [
     'node_modules/(?!next-auth|@auth/core|@auth/core/providers/credentials|@auth/core/providers|next/dist/client/components/|next/dist/client/|next/dist/shared/lib/|next/dist/shared/|next/dist/pages/|@next/env|next/navigation|next/dist/compiled/|next/dist/server/|@next/env|next/package.json)',
