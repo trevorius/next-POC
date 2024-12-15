@@ -2,6 +2,12 @@
 
 previous message in this thread will include a merge Request message with a test section.
 
+# Restrictions
+
+- Do not write tests for shadcn/ui components.
+- Do not test installed packages
+- only test the code that is specific to the project.
+
 # Build Tests
 
 1. analyse the test section and separate tests into groups so they can be automated.
