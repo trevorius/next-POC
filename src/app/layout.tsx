@@ -1,16 +1,18 @@
+import { auth } from '@/auth';
 import { AppSidebar } from '@/components/layout/app-sidebar';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { getServerSession } from 'next-auth';
 import { cookies } from 'next/headers';
+
+import './globals.css';
 
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession();
-  const cookieStore = cookies();
-  const defaultOpen = cookieStore.get('sidebar:state')?.value === 'true';
+  const session = await auth();
+  const cookieStore = await cookies();
+  const defaultOpen = cookieStore.has('sidebar:state');
 
   // Determine user role
   let userRole: 'SUPER_ADMIN' | 'OWNER' | 'USER' = 'USER';
