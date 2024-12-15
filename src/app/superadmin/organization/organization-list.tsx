@@ -60,7 +60,6 @@ export function OrganizationList({ organizations }: OrganizationListProps) {
       router.refresh();
       setError(null);
     } catch (err) {
-      console.error(err);
       setError('Failed to delete organization');
     } finally {
       setDeleteDialogOpen(false);
