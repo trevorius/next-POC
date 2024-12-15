@@ -17,6 +17,15 @@ describe('CreateOrganizationDialog', () => {
     back: jest.fn(),
   };
 
+  const mockResponse = {
+    organization: {
+      id: '1',
+      name: 'Test Org',
+    },
+    ownerEmail: 'john@example.com',
+    temporaryPassword: 'word1-word2-word3',
+  };
+
   beforeEach(() => {
     useRouter.mockImplementation(() => mockRouter);
     jest.clearAllMocks();
@@ -55,10 +64,7 @@ describe('CreateOrganizationDialog', () => {
       ownerEmail: 'john@example.com',
     };
 
-    (createOrganization as jest.Mock).mockResolvedValueOnce({
-      id: '1',
-      ...mockData,
-    });
+    (createOrganization as jest.Mock).mockResolvedValueOnce(mockResponse);
 
     render(<CreateOrganizationDialog />);
     fireEvent.click(
@@ -81,6 +87,16 @@ describe('CreateOrganizationDialog', () => {
       expect(createOrganization).toHaveBeenCalledWith(mockData);
       expect(mockRouter.refresh).toHaveBeenCalled();
     });
+
+    // Verify success state
+    expect(screen.getByText('Organization Created')).toBeInTheDocument();
+    expect(
+      screen.getByText(mockResponse.organization.name)
+    ).toBeInTheDocument();
+    expect(screen.getByText(mockResponse.ownerEmail)).toBeInTheDocument();
+    expect(
+      screen.getByText(mockResponse.temporaryPassword)
+    ).toBeInTheDocument();
   });
 
   it('handles submission errors', async () => {
@@ -137,5 +153,29 @@ describe('CreateOrganizationDialog', () => {
 
     expect(submitButton).toBeDisabled();
     expect(submitButton).toHaveTextContent('Creating...');
+  });
+
+  it('resets form when dialog is closed', async () => {
+    const user = userEvent.setup();
+    render(<CreateOrganizationDialog />);
+
+    // Open dialog and fill form
+    await user.click(
+      screen.getByRole('button', { name: /create organization/i })
+    );
+    await user.type(screen.getByLabelText(/organization name/i), 'Test Org');
+    await user.type(screen.getByLabelText(/owner name/i), 'John Doe');
+    await user.type(screen.getByLabelText(/owner email/i), 'john@example.com');
+
+    // Close dialog
+    await user.click(screen.getByRole('button', { name: /close/i }));
+
+    // Reopen dialog and check fields are empty
+    await user.click(
+      screen.getByRole('button', { name: /create organization/i })
+    );
+    expect(screen.getByLabelText(/organization name/i)).toHaveValue('');
+    expect(screen.getByLabelText(/owner name/i)).toHaveValue('');
+    expect(screen.getByLabelText(/owner email/i)).toHaveValue('');
   });
 });

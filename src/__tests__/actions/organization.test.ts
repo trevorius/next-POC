@@ -5,6 +5,7 @@ import {
 } from '@/app/actions/organization';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { words } from '@/lib/words';
 
 // Mock auth and prisma
 jest.mock('@/auth');
@@ -62,7 +63,7 @@ describe('Organization Server Actions', () => {
       );
     });
 
-    it('should create organization with owner account', async () => {
+    it('should create organization with owner account and return temporary password', async () => {
       (auth as jest.Mock).mockResolvedValue(mockSuperAdminSession);
 
       const mockOrganization = { id: '1', ...mockOrganizationData };
@@ -85,10 +86,19 @@ describe('Organization Server Actions', () => {
 
       const result = await createOrganization(mockOrganizationData);
 
-      expect(result).toEqual(mockOrganization);
+      // Verify organization creation
+      expect(result.organization).toEqual(mockOrganization);
       expect(prisma.organization.create).toHaveBeenCalled();
       expect(prisma.user.create).toHaveBeenCalled();
       expect(prisma.organizationMember.create).toHaveBeenCalled();
+
+      // Verify password format
+      expect(result.temporaryPassword).toMatch(/^[a-z]+-[a-z]+-[a-z]+$/);
+      const passwordParts = result.temporaryPassword.split('-');
+      expect(passwordParts).toHaveLength(3);
+      passwordParts.forEach((word) => {
+        expect(words).toContain(word);
+      });
     });
   });
 
