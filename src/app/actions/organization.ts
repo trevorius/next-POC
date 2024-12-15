@@ -75,3 +75,25 @@ export async function getOrganizations() {
     },
   });
 }
+
+export async function deleteOrganization(organizationId: string) {
+  const session = await auth();
+
+  if (!session?.user?.isSuperAdmin) {
+    throw new Error('Unauthorized');
+  }
+
+  try {
+    // Delete all organization members first
+    await prisma.organizationMember.deleteMany({
+      where: { organizationId },
+    });
+
+    // Then delete the organization
+    return await prisma.organization.delete({
+      where: { id: organizationId },
+    });
+  } catch (error) {
+    throw new Error('Organization not found');
+  }
+}
