@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 
 export default auth((req) => {
   const { nextUrl } = req;
-  const isLoggedIn = !!req.auth;
 
   // Protect superadmin routes
   if (

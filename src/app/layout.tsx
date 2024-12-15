@@ -18,7 +18,11 @@ export default async function RootLayout({
   let userRole: 'SUPER_ADMIN' | 'OWNER' | 'USER' = 'USER';
   if (session?.user?.isSuperAdmin) {
     userRole = 'SUPER_ADMIN';
-  } else if (session?.user?.organizationRole === 'OWNER') {
+  } else if (
+    session?.user &&
+    'organizationRole' in session.user &&
+    session.user.organizationRole === 'OWNER'
+  ) {
     userRole = 'OWNER';
   }
 

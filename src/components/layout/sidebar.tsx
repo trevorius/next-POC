@@ -11,11 +11,13 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+
+interface NavigationItem {
   title: string;
   href: string;
   icon: React.ElementType;
   roles: ('SUPER_ADMIN' | 'OWNER' | 'USER')[];
-};
+}
 
 const navigationItems: NavigationItem[] = [
   {
@@ -66,16 +68,16 @@ interface SidebarProps {
   userRole: 'SUPER_ADMIN' | 'OWNER' | 'USER';
   className?: string;
 }
+
 export function Sidebar({ userRole, className }: SidebarProps) {
   const pathname = usePathname();
-export function Sidebar({ userRole }: SidebarProps) {
   const filteredItems = navigationItems.filter((item) =>
     item.roles.includes(userRole)
   );
 
   return (
     <div className={cn('pb-12', className)}>
-      <div className="space-y-4 py-4">
+      <div className='space-y-4 py-4'>
         <ShieldCheck className='h-6 w-6' />
         <h2 className='text-lg font-semibold'>Loi 25</h2>
       </div>
