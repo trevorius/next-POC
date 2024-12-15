@@ -1,5 +1,6 @@
 import {
   createOrganization,
+  deleteOrganization,
   getOrganizations,
 } from '@/app/actions/organization';
 import { auth } from '@/auth';
@@ -12,6 +13,7 @@ jest.mock('@/lib/prisma', () => ({
     organization: {
       create: jest.fn(),
       findMany: jest.fn(),
+      delete: jest.fn(),
     },
     user: {
       findUnique: jest.fn(),
@@ -19,6 +21,7 @@ jest.mock('@/lib/prisma', () => ({
     },
     organizationMember: {
       create: jest.fn(),
+      deleteMany: jest.fn(),
     },
   },
 }));
@@ -112,6 +115,47 @@ describe('Organization Server Actions', () => {
 
       expect(result).toEqual(mockOrganizations);
       expect(prisma.organization.findMany).toHaveBeenCalled();
+    });
+  });
+
+  describe('deleteOrganization', () => {
+    it('should throw error if user is not super admin', async () => {
+      (auth as jest.Mock).mockResolvedValue(mockNonSuperAdminSession);
+
+      await expect(deleteOrganization('1')).rejects.toThrow('Unauthorized');
+    });
+
+    it('should delete organization and its members', async () => {
+      (auth as jest.Mock).mockResolvedValue(mockSuperAdminSession);
+
+      const organizationId = '1';
+      (prisma.organizationMember.deleteMany as jest.Mock).mockResolvedValue({
+        count: 2,
+      });
+      (prisma.organization.delete as jest.Mock).mockResolvedValue({
+        id: organizationId,
+      });
+
+      await deleteOrganization(organizationId);
+
+      expect(prisma.organizationMember.deleteMany).toHaveBeenCalledWith({
+        where: { organizationId },
+      });
+      expect(prisma.organization.delete).toHaveBeenCalledWith({
+        where: { id: organizationId },
+      });
+    });
+
+    it('should throw error if organization does not exist', async () => {
+      (auth as jest.Mock).mockResolvedValue(mockSuperAdminSession);
+
+      (prisma.organization.delete as jest.Mock).mockRejectedValue(
+        new Error('Organization not found')
+      );
+
+      await expect(deleteOrganization('999')).rejects.toThrow(
+        'Organization not found'
+      );
     });
   });
 });

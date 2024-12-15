@@ -1,5 +1,12 @@
+import { deleteOrganization } from '@/app/actions/organization';
 import { OrganizationList } from '@/app/superadmin/organization/organization-list';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
+// Mock the organization actions
+jest.mock('@/app/actions/organization', () => ({
+  deleteOrganization: jest.fn(),
+}));
 
 describe('OrganizationList', () => {
   const mockOrganizations = [
@@ -62,6 +69,14 @@ describe('OrganizationList', () => {
     },
   ];
 
+  const mockRouter = {
+    refresh: jest.fn(),
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('renders table headers correctly', () => {
     render(<OrganizationList organizations={mockOrganizations} />);
 
@@ -109,5 +124,69 @@ describe('OrganizationList', () => {
     // Check that there are no data rows (excluding header row)
     const rows = screen.getAllByRole('row');
     expect(rows.length).toBe(1); // Only header row should be present
+  });
+
+  describe('Delete Organization', () => {
+    it('renders delete button for each organization', () => {
+      render(<OrganizationList organizations={mockOrganizations} />);
+      const deleteButtons = screen.getAllByRole('button', { name: /delete/i });
+      expect(deleteButtons).toHaveLength(mockOrganizations.length);
+    });
+
+    it('shows confirmation dialog when delete button is clicked', async () => {
+      const user = userEvent.setup();
+      render(<OrganizationList organizations={mockOrganizations} />);
+
+      await user.click(screen.getAllByRole('button', { name: /delete/i })[0]);
+
+      expect(
+        screen.getByText(/are you sure you want to delete this organization\?/i)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/this action cannot be undone\./i)
+      ).toBeInTheDocument();
+    });
+
+    it('calls deleteOrganization when confirmed', async () => {
+      const user = userEvent.setup();
+      render(<OrganizationList organizations={mockOrganizations} />);
+
+      await user.click(screen.getAllByRole('button', { name: /delete/i })[0]);
+      await user.click(screen.getByRole('button', { name: /confirm/i }));
+
+      await waitFor(() => {
+        expect(deleteOrganization).toHaveBeenCalledWith(
+          mockOrganizations[0].id
+        );
+      });
+    });
+
+    it('does not call deleteOrganization when cancelled', async () => {
+      const user = userEvent.setup();
+      render(<OrganizationList organizations={mockOrganizations} />);
+
+      await user.click(screen.getAllByRole('button', { name: /delete/i })[0]);
+      await user.click(screen.getByRole('button', { name: /cancel/i }));
+
+      expect(deleteOrganization).not.toHaveBeenCalled();
+    });
+
+    it('shows error message when delete fails', async () => {
+      const user = userEvent.setup();
+      (deleteOrganization as jest.Mock).mockRejectedValueOnce(
+        new Error('Failed to delete')
+      );
+
+      render(<OrganizationList organizations={mockOrganizations} />);
+
+      await user.click(screen.getAllByRole('button', { name: /delete/i })[0]);
+      await user.click(screen.getByRole('button', { name: /confirm/i }));
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(/failed to delete organization/i)
+        ).toBeInTheDocument();
+      });
+    });
   });
 });
