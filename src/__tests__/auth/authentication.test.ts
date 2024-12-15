@@ -3,7 +3,7 @@ import { prismaMock } from '@/lib/__mocks__/prisma';
 // Mock next-auth
 const mockSignIn = jest.fn();
 jest.mock('next-auth/react', () => ({
-  signIn: (...args: any[]) => mockSignIn(...args),
+  signIn: (...args: [string, Record<string, unknown>]) => mockSignIn(...args),
 }));
 
 describe('Authentication Flow', () => {
