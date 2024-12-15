@@ -31,3 +31,17 @@ these are a minimum of tests expected for this feature but not all tests are lis
 - sidebar element should only be rendered for superadmin users.
 - routes should be protected and only accessible to superadmin users.
 - server actions should be protected and only accessible to superadmin users.
+
+<hr/>
+
+# Follow up prompts:
+
+## delete button:
+
+add a delete button to organizations tabel to remove organizations this will require a confirmation dialog don't forget superadmin routes must be protected as is configured in the middleware file.
+
+use server actions as much as possible for code to be easyer to follow.
+
+use TDD principles writing failing tests BEFORE ANYTHING ELSE
+and then writing the code to mmake the tests pass.
+test both server actions and ui
