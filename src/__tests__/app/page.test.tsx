@@ -9,6 +9,10 @@ jest.mock('@/auth');
 jest.mock('@/app/actions/user');
 jest.mock('next/navigation', () => ({
   redirect: jest.fn(),
+  useRouter: jest.fn(() => ({
+    push: jest.fn(),
+    refresh: jest.fn(),
+  })),
 }));
 
 describe('HomePage', () => {
@@ -38,9 +42,8 @@ describe('HomePage', () => {
       { id: '2', name: 'Org 2' },
     ]);
 
-    const { container } = render(await HomePage());
+    render(await HomePage());
 
-    expect(container).toBeInTheDocument();
     expect(screen.getByText(/select your organization/i)).toBeInTheDocument();
   });
 
@@ -55,9 +58,21 @@ describe('HomePage', () => {
   it('shows message when user has no organizations', async () => {
     (getUserOrganizations as jest.Mock).mockResolvedValue([]);
 
-    const { container } = render(await HomePage());
+    render(await HomePage());
 
-    expect(container).toBeInTheDocument();
     expect(screen.getByText(/no organizations available/i)).toBeInTheDocument();
+  });
+
+  it('displays helper text for organization selection', async () => {
+    (getUserOrganizations as jest.Mock).mockResolvedValue([
+      { id: '1', name: 'Org 1' },
+      { id: '2', name: 'Org 2' },
+    ]);
+
+    render(await HomePage());
+
+    expect(
+      screen.getByText(/choose an organization to continue/i)
+    ).toBeInTheDocument();
   });
 });

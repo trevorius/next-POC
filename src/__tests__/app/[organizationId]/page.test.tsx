@@ -26,19 +26,13 @@ describe('OrganizationPage', () => {
   });
 
   it('displays organization name', async () => {
-    const { container } = render(
-      await OrganizationPage({ params: { organizationId: '1' } })
-    );
-
-    expect(container).toBeInTheDocument();
+    render(await OrganizationPage({ params: { organizationId: '1' } }));
     expect(screen.getByText('Test Organization')).toBeInTheDocument();
   });
 
   it('redirects to login if user is not authenticated', async () => {
     (auth as jest.Mock).mockResolvedValue(null);
-
     await OrganizationPage({ params: { organizationId: '1' } });
-
     expect(redirect).toHaveBeenCalledWith('/login');
   });
 
@@ -46,17 +40,21 @@ describe('OrganizationPage', () => {
     (getUserOrganizations as jest.Mock).mockResolvedValue([
       { id: '2', name: 'Other Org' },
     ]);
-
     await OrganizationPage({ params: { organizationId: '1' } });
-
     expect(redirect).toHaveBeenCalledWith('/');
   });
 
   it('redirects to home if user has no organizations', async () => {
     (getUserOrganizations as jest.Mock).mockResolvedValue([]);
-
     await OrganizationPage({ params: { organizationId: '1' } });
-
     expect(redirect).toHaveBeenCalledWith('/');
+  });
+
+  it('displays organization dashboard cards', async () => {
+    render(await OrganizationPage({ params: { organizationId: '1' } }));
+    expect(screen.getByText('Members')).toBeInTheDocument();
+    expect(screen.getByText('Documents')).toBeInTheDocument();
+    expect(screen.getByText('Active Members')).toBeInTheDocument();
+    expect(screen.getByText('Compliance Score')).toBeInTheDocument();
   });
 });

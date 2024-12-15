@@ -46,12 +46,19 @@ describe('OrganizationSelector', () => {
     const user = userEvent.setup();
     render(<OrganizationSelector />);
 
-    // Wait for combobox to be available
+    // Wait for combobox to be available and click it
     const combobox = await screen.findByRole('combobox');
     await user.click(combobox);
-    await user.type(combobox, 'Test');
 
-    // Should only show matching organization
+    // Wait for popover to be visible
+    await waitFor(() => {
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
+    });
+
+    // Type search text
+    await user.type(screen.getByPlaceholderText(/search/i), 'Test');
+
+    // Wait for filtered results
     await waitFor(() => {
       expect(screen.getByText('Test Organization')).toBeInTheDocument();
       expect(screen.queryByText('Organization 1')).not.toBeInTheDocument();
@@ -62,9 +69,16 @@ describe('OrganizationSelector', () => {
     const user = userEvent.setup();
     render(<OrganizationSelector />);
 
-    // Wait for combobox to be available
+    // Wait for combobox to be available and click it
     const combobox = await screen.findByRole('combobox');
     await user.click(combobox);
+
+    // Wait for popover to be visible
+    await waitFor(() => {
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
+    });
+
+    // Click organization
     await user.click(screen.getByText('Organization 1'));
 
     expect(mockRouter.push).toHaveBeenCalledWith('/1');
@@ -87,6 +101,17 @@ describe('OrganizationSelector', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/no organizations found/i)).toBeInTheDocument();
+    });
+  });
+
+  it('redirects automatically if only one organization', async () => {
+    const singleOrg = [{ id: '1', name: 'Single Org' }];
+    (getUserOrganizations as jest.Mock).mockResolvedValue(singleOrg);
+
+    render(<OrganizationSelector />);
+
+    await waitFor(() => {
+      expect(mockRouter.push).toHaveBeenCalledWith('/1');
     });
   });
 });
