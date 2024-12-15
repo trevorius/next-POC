@@ -3,6 +3,7 @@
 import { auth } from '@/auth';
 import { generateSalt, hashPassword } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { generatePassword } from '@/lib/words';
 
 interface CreateOrganizationData {
   name: string;
@@ -10,7 +11,18 @@ interface CreateOrganizationData {
   ownerName: string;
 }
 
-export async function createOrganization(data: CreateOrganizationData) {
+interface CreateOrganizationResponse {
+  organization: {
+    id: string;
+    name: string;
+  };
+  ownerEmail: string;
+  temporaryPassword: string;
+}
+
+export async function createOrganization(
+  data: CreateOrganizationData
+): Promise<CreateOrganizationResponse> {
   const session = await auth();
 
   if (!session?.user?.isSuperAdmin) {
@@ -28,7 +40,7 @@ export async function createOrganization(data: CreateOrganizationData) {
 
   // Create owner account
   const salt = generateSalt();
-  const tempPassword = Math.random().toString(36).slice(-8);
+  const tempPassword = generatePassword();
   const hashedPassword = await hashPassword(tempPassword, salt);
 
   const user = await prisma.user.create({
@@ -49,7 +61,11 @@ export async function createOrganization(data: CreateOrganizationData) {
     },
   });
 
-  return organization;
+  return {
+    organization,
+    ownerEmail,
+    temporaryPassword: tempPassword,
+  };
 }
 
 export async function getOrganizations() {
