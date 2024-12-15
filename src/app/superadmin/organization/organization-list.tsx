@@ -59,7 +59,8 @@ export function OrganizationList({ organizations }: OrganizationListProps) {
       await deleteOrganization(selectedOrganization);
       router.refresh();
       setError(null);
-    } catch (err) {
+    } catch (error) {
+      console.error(error);
       setError('Failed to delete organization');
     } finally {
       setDeleteDialogOpen(false);
