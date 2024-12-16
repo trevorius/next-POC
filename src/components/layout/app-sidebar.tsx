@@ -1,5 +1,6 @@
 'use client';
 
+import { OrganizationSwitcher } from '@/components/organization/organization-switcher';
 import {
   Building2,
   LayoutDashboard,
@@ -66,10 +67,11 @@ export function AppSidebar() {
 
   return (
     <Sidebar>
-      <SidebarHeader className='h-[60px] px-6'>
+      <SidebarHeader className='h-[100px] px-6 flex flex-col'>
         <Link href='/' className='flex items-center gap-2 font-semibold'>
           {process.env.NEXT_PUBLIC_APP_NAME}
         </Link>
+        <OrganizationSwitcher />
       </SidebarHeader>
 
       <SidebarContent>
