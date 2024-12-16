@@ -65,7 +65,7 @@ export async function createOrganization(
   return {
     organization,
     ownerEmail,
-    temporaryPassword: user.password,
+    temporaryPassword: user.password || '',
   };
 }
 

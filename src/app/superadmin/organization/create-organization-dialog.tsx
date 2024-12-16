@@ -76,7 +76,11 @@ export function CreateOrganizationDialog() {
           </DialogTitle>
           <DialogDescription>
             {success
-              ? 'The organization has been created successfully. Please save the temporary password before closing.'
+              ? `The organization has been created successfully.${
+                  success.temporaryPassword
+                    ? ' Please save the temporary password before closing.'
+                    : ''
+                }`
               : 'Create a new organization and its owner account.'}
           </DialogDescription>
         </DialogHeader>
@@ -95,28 +99,30 @@ export function CreateOrganizationDialog() {
                 {success.ownerEmail}
               </div>
             </div>
-            <div className='grid gap-2'>
-              <Label className='font-semibold'>Temporary Password</Label>
-              <div className='relative'>
-                <div className='rounded-md bg-muted px-3 py-2 font-mono break-all'>
-                  {success.temporaryPassword}
+            {success.temporaryPassword && (
+              <div className='grid gap-2'>
+                <Label className='font-semibold'>Temporary Password</Label>
+                <div className='relative'>
+                  <div className='rounded-md bg-muted px-3 py-2 font-mono break-all'>
+                    {success.temporaryPassword}
+                  </div>
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    className='absolute right-2 top-1/2 -translate-y-1/2'
+                    onClick={() => {
+                      navigator.clipboard.writeText(success.temporaryPassword);
+                    }}
+                  >
+                    Copy
+                  </Button>
                 </div>
-                <Button
-                  variant='outline'
-                  size='sm'
-                  className='absolute right-2 top-1/2 -translate-y-1/2'
-                  onClick={() => {
-                    navigator.clipboard.writeText(success.temporaryPassword);
-                  }}
-                >
-                  Copy
-                </Button>
+                <p className='text-sm text-muted-foreground'>
+                  Please save this password and share it securely with the
+                  organization owner.
+                </p>
               </div>
-              <p className='text-sm text-muted-foreground'>
-                Please save this password and share it securely with the
-                organization owner.
-              </p>
-            </div>
+            )}
             <DialogFooter>
               <Button
                 onClick={() => handleClose(false)}
