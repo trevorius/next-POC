@@ -31,6 +31,7 @@ describe('createOrFindAccount', () => {
 
     expect(prisma.user.findUnique).toHaveBeenCalledWith({
       where: { email: mockEmail },
+      select: { id: true, email: true, name: true, password: true },
     });
     expect(prisma.user.create).toHaveBeenCalled();
     expect(result).toEqual(mockUser);
@@ -45,6 +46,7 @@ describe('createOrFindAccount', () => {
 
     expect(prisma.user.findUnique).toHaveBeenCalledWith({
       where: { email: mockEmail },
+      select: { id: true, email: true, name: true, password: true },
     });
     expect(prisma.user.create).not.toHaveBeenCalled();
     expect(result).toEqual(mockUser);
