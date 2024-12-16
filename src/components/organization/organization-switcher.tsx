@@ -1,8 +1,6 @@
 'use client';
 
-import { Building2, Check, ChevronDown } from 'lucide-react';
-import * as React from 'react';
-
+import { getUserOrganizations } from '@/app/actions/user';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -10,6 +8,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Building2, Check, ChevronDown } from 'lucide-react';
+import * as React from 'react';
 
 type Organization = {
   id: string;
@@ -17,16 +17,51 @@ type Organization = {
 };
 
 export function OrganizationSwitcher() {
+  const [organizations, setOrganizations] = React.useState<Organization[]>([]);
   const [selectedOrg, setSelectedOrg] = React.useState<Organization | null>(
     null
   );
+  const [loading, setLoading] = React.useState(true);
 
-  // TODO: Replace with actual data fetching
-  const organizations: Organization[] = [
-    { id: '1', name: 'Acme Inc' },
-    { id: '2', name: 'Monsters Inc' },
-    { id: '3', name: 'Stark Industries' },
-  ];
+  React.useEffect(() => {
+    async function loadOrganizations() {
+      try {
+        const orgs = await getUserOrganizations();
+        setOrganizations(orgs);
+        if (orgs.length > 0 && !selectedOrg) {
+          setSelectedOrg(orgs[0]);
+        }
+      } catch (error) {
+        console.error('Failed to load organizations:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadOrganizations();
+  }, [selectedOrg]);
+
+  if (loading) {
+    return (
+      <Button variant='ghost' className='w-full justify-between' disabled>
+        <div className='flex items-center gap-2'>
+          <Building2 className='h-4 w-4 shrink-0' />
+          <span>Loading...</span>
+        </div>
+      </Button>
+    );
+  }
+
+  if (organizations.length === 0) {
+    return (
+      <Button variant='ghost' className='w-full justify-between' disabled>
+        <div className='flex items-center gap-2'>
+          <Building2 className='h-4 w-4 shrink-0' />
+          <span>No organizations</span>
+        </div>
+      </Button>
+    );
+  }
 
   return (
     <DropdownMenu>
