@@ -1,21 +1,6 @@
 'use client';
 
 import { getUserOrganizations } from '@/app/actions/user';
-import { Button } from '@/components/ui/button';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { Building2, Check } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -64,51 +49,5 @@ export function OrganizationSelector() {
     return <div>No organizations found</div>;
   }
 
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant='outline'
-          role='combobox'
-          aria-expanded={open}
-          className='justify-between'
-        >
-          {selected ? (
-            <>
-              <Building2 className='mr-2 h-4 w-4' />
-              {selected.name}
-            </>
-          ) : (
-            <>
-              <Building2 className='mr-2 h-4 w-4' />
-              Select organization...
-            </>
-          )}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className='p-0'>
-        <Command>
-          <CommandInput placeholder='Search organizations...' />
-          <CommandList>
-            <CommandEmpty>No organizations found</CommandEmpty>
-            <CommandGroup>
-              {organizations.map((org) => (
-                <CommandItem
-                  key={org.id}
-                  onSelect={() => handleSelect(org)}
-                  className='cursor-pointer'
-                >
-                  <Building2 className='mr-2 h-4 w-4' />
-                  {org.name}
-                  {selected?.id === org.id && (
-                    <Check className='ml-auto h-4 w-4' />
-                  )}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
-  );
+  return <></>;
 }

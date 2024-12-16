@@ -2,25 +2,20 @@ import { getUserOrganizations } from '@/app/actions/user';
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 
-interface OrganizationPageProps {
-  params: {
-    organizationId: string;
-  };
-}
-
 export default async function OrganizationPage({
   params,
-}: OrganizationPageProps) {
+}: {
+  params: Promise<{ organizationId: string }>;
+}) {
   const session = await auth();
+  const organizationId = (await params).organizationId;
 
   if (!session?.user) {
     redirect('/login');
   }
 
   const organizations = await getUserOrganizations();
-  const organization = organizations.find(
-    (org) => org.id === params.organizationId
-  );
+  const organization = organizations.find((org) => org.id === organizationId);
 
   if (!organization) {
     redirect('/');
