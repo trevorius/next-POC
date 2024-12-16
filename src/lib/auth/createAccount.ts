@@ -15,9 +15,10 @@ export async function createOrFindAccount(
   ownerEmail: string,
   ownerName: string
 ) {
-  // First try to find existing user
+  // First try to find existing user without selecting password field
   let user = await prisma.user.findUnique({
     where: { email: ownerEmail },
+    select: { id: true, email: true, name: true },
   });
 
   // If user doesn't exist, create new account
