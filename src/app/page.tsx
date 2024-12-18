@@ -1,6 +1,5 @@
 import { getUserOrganizations } from '@/app/actions/user';
 import { auth } from '@/auth';
-import { OrganizationSelector } from '@/components/organization-selector';
 import { redirect } from 'next/navigation';
 
 export default async function HomePage() {
@@ -39,7 +38,6 @@ export default async function HomePage() {
         <p className='mt-2 mb-4 text-muted-foreground'>
           Choose an organization to continue
         </p>
-        <OrganizationSelector />
       </div>
     </div>
   );

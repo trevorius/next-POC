@@ -32,28 +32,30 @@ async function getUserRole(orgId: string, userId: string) {
 export default async function UsersPage({
   params,
 }: {
-  params: { orgId: string };
+  params: Promise<{ orgId: string }>;
 }) {
+  const { orgId } = await params;
+
   const session = await auth();
   if (!session) redirect('/auth/signin');
 
-  const userRole = await getUserRole(params.orgId, session.user.id);
+  const userRole = await getUserRole(orgId, session.user.id);
   if (!userRole) redirect('/');
 
-  const users = await getUsersWithRoles(params.orgId);
+  const users = await getUsersWithRoles(orgId);
 
   return (
     <div className='container mx-auto py-8'>
       <div className='flex justify-between items-center mb-6'>
         <h1 className='text-2xl font-bold'>Organization Members</h1>
         {(userRole === 'OWNER' || userRole === 'ADMIN') && (
-          <CreateUserButton orgId={params.orgId} currentUserRole={userRole} />
+          <CreateUserButton orgId={orgId} currentUserRole={userRole} />
         )}
       </div>
       <UserManagementTable
         users={users}
         currentUserRole={userRole}
-        orgId={params.orgId}
+        orgId={orgId}
       />
     </div>
   );

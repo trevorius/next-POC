@@ -1,8 +1,15 @@
+import { FlatCompat } from '@eslint/eslintrc';
 import typescript from '@typescript-eslint/eslint-plugin';
 import typescriptParser from '@typescript-eslint/parser';
 
+const compat = new FlatCompat({
+  baseDirectory: import.meta.dirname,
+});
+
 export default [
   {
+    ...compat.config,
+    // extends: ['next/core-web-vitals', 'next/typescript'],
     ignores: [
       'node_modules/**',
       '.next/**',

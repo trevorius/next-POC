@@ -40,7 +40,7 @@ export function AppSidebar() {
   const navigation = [
     {
       name: 'Dashboard',
-      href: '/',
+      href: session?.user?.isSuperAdmin ? '/superadmin' : '/',
       icon: LayoutDashboard,
       show: session?.user,
     },

@@ -1,8 +1,11 @@
 'use server';
 
 import { auth } from '@/auth';
+import { createOrFindAccount } from '@/lib/auth/createAccount';
 import { prisma } from '@/lib/prisma';
+import { OrganizationRole } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 
 export async function createUser(formData: FormData) {
   const session = await auth();
@@ -11,7 +14,7 @@ export async function createUser(formData: FormData) {
   }
 
   const email = formData.get('email') as string;
-  const role = formData.get('role') as string;
+  const role = formData.get('role') as OrganizationRole;
   const orgId = formData.get('orgId') as string;
 
   // Check if current user has permission
@@ -26,6 +29,7 @@ export async function createUser(formData: FormData) {
     !currentMember ||
     (currentMember.role !== 'OWNER' && currentMember.role !== 'ADMIN')
   ) {
+    redirect('/unauthorized');
     throw new Error('Forbidden');
   }
 
@@ -33,21 +37,14 @@ export async function createUser(formData: FormData) {
     throw new Error('Admins cannot create admin users');
   }
 
-  const tempPassword = generateTemporaryPassword();
+  const user = await createOrFindAccount(email, email);
 
-  // Create user and add to organization
-  await prisma.user.create({
+  // Create organization membership
+  await prisma.organizationMember.create({
     data: {
-      email,
-      password: tempPassword, // In production, hash this password
-      organizations: {
-        create: {
-          organization: {
-            connect: { id: orgId },
-          },
-          role,
-        },
-      },
+      organizationId: orgId,
+      userId: user.id,
+      role,
     },
   });
 
