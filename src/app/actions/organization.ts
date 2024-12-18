@@ -37,20 +37,6 @@ export async function createOrganization(
     },
   });
 
-  // // Create owner account
-  // const salt = generateSalt();
-  // const tempPassword = generatePassword();
-  // const hashedPassword = await hashPassword(tempPassword, salt);
-
-  // const user = await prisma.user.create({
-  //   data: {
-  //     email: ownerEmail,
-  //     name: ownerName,
-  //     salt,
-  //     password: hashedPassword,
-  //   },
-  // });
-
   const user = await createOrFindAccount(ownerEmail, ownerName);
 
   // Create organization membership

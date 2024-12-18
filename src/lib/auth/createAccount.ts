@@ -26,8 +26,9 @@ export async function createOrFindAccount(
     select: { id: true, email: true, name: true, password: true },
   });
 
-  // If user doesn't exist, create new account
-  if (!user) {
+  if (user) {
+    user.password = null;
+  } else {
     const salt = generateSalt();
     const tempPassword = generatePassword();
     const hashedPassword = await hashPassword(tempPassword, salt);

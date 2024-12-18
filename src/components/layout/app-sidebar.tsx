@@ -104,7 +104,7 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className='border-t p-4'>
+      <SidebarFooter className='border-t p-4' data-testid='sidebar-footer'>
         <div className='flex items-center gap-3 px-2'>
           <Avatar>
             <AvatarFallback>
