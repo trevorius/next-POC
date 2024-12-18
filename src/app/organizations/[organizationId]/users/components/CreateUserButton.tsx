@@ -1,6 +1,6 @@
 'use client';
 
-import { createUser } from '@/app/[organizationId]/users/actions';
+import { createUser } from '@/app/organizations/[organizationId]/users/actions';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,

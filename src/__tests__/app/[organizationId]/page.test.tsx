@@ -1,5 +1,5 @@
-import OrganizationPage from '@/app/[organizationId]/page';
 import { getUserOrganizations } from '@/app/actions/user';
+import OrganizationPage from '@/app/organizations/[organizationId]/page';
 import { auth } from '@/auth';
 import { render, screen } from '@testing-library/react';
 import { redirect } from 'next/navigation';

@@ -28,7 +28,7 @@ export default async function HomePage() {
 
   // If user has exactly one organization, redirect to it
   if (organizations.length === 1) {
-    redirect(`/${organizations[0].id}`);
+    redirect(`/organizations/${organizations[0].id}`);
   }
 
   // If user has multiple organizations, show selector
