@@ -19,7 +19,6 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -43,7 +42,7 @@ export function AppSidebar() {
       name: 'Dashboard',
       href: '/',
       icon: LayoutDashboard,
-      show: true,
+      show: session?.user,
     },
     {
       name: 'Organizations',
@@ -67,16 +66,15 @@ export function AppSidebar() {
 
   return (
     <Sidebar>
-      <SidebarHeader className='h-[100px] px-6 flex flex-col'>
+      <SidebarHeader className=' px-6 flex flex-col'>
         <Link href='/' className='flex items-center gap-2 font-semibold'>
           {process.env.NEXT_PUBLIC_APP_NAME}
         </Link>
-        <OrganizationSwitcher />
+        {session?.user && <OrganizationSwitcher />}
       </SidebarHeader>
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navigation
@@ -104,29 +102,31 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className='border-t p-4' data-testid='sidebar-footer'>
-        <div className='flex items-center gap-3 px-2'>
-          <Avatar>
-            <AvatarFallback>
-              {session?.user?.name ? getInitials(session.user.name) : '??'}
-            </AvatarFallback>
-          </Avatar>
-          <div className='flex flex-col overflow-hidden'>
-            <span className='text-sm font-medium'>{session?.user?.name}</span>
-            <span className='text-xs text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap'>
-              {session?.user?.email}
-            </span>
+      {session?.user && (
+        <SidebarFooter className='border-t p-4' data-testid='sidebar-footer'>
+          <div className='flex items-center gap-3 px-2'>
+            <Avatar>
+              <AvatarFallback>
+                {session?.user?.name ? getInitials(session.user.name) : '??'}
+              </AvatarFallback>
+            </Avatar>
+            <div className='flex flex-col overflow-hidden'>
+              <span className='text-sm font-medium'>{session?.user?.name}</span>
+              <span className='text-xs text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap'>
+                {session?.user?.email}
+              </span>
+            </div>
           </div>
-        </div>
-        <Button
-          variant='ghost'
-          className='w-full justify-start mt-4'
-          onClick={() => signOut()}
-        >
-          <LogOut className='mr-2 h-4 w-4' />
-          Logout
-        </Button>
-      </SidebarFooter>
+          <Button
+            variant='ghost'
+            className='w-full justify-start mt-4'
+            onClick={() => signOut()}
+          >
+            <LogOut className='mr-2 h-4 w-4' />
+            Logout
+          </Button>
+        </SidebarFooter>
+      )}
     </Sidebar>
   );
 }
