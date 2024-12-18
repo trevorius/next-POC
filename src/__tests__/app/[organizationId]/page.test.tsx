@@ -1,7 +1,7 @@
 import { getUserOrganizations } from '@/app/actions/user';
 import OrganizationPage from '@/app/organizations/[organizationId]/page';
 import { auth } from '@/auth';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { redirect } from 'next/navigation';
 
 // Mock auth and user actions
@@ -9,6 +9,13 @@ jest.mock('@/auth');
 jest.mock('@/app/actions/user');
 jest.mock('next/navigation', () => ({
   redirect: jest.fn(),
+}));
+
+// Mock RequireOrgMembership component
+jest.mock('@/components/auth/RequireOrgMembership', () => ({
+  RequireOrgMembership: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
 }));
 
 describe('OrganizationPage', () => {
@@ -26,13 +33,19 @@ describe('OrganizationPage', () => {
   });
 
   it('displays organization name', async () => {
-    render(await OrganizationPage({ params: { organizationId: '1' } }));
-    expect(screen.getByText('Test Organization')).toBeInTheDocument();
+    const params = { organizationId: '1' };
+    const Component = await OrganizationPage({ params });
+    render(Component);
+
+    await waitFor(() => {
+      expect(screen.getByText('Test Organization')).toBeInTheDocument();
+    });
   });
 
   it('redirects to login if user is not authenticated', async () => {
     (auth as jest.Mock).mockResolvedValue(null);
-    await OrganizationPage({ params: { organizationId: '1' } });
+    const params = { organizationId: '1' };
+    await OrganizationPage({ params });
     expect(redirect).toHaveBeenCalledWith('/login');
   });
 
@@ -40,21 +53,28 @@ describe('OrganizationPage', () => {
     (getUserOrganizations as jest.Mock).mockResolvedValue([
       { id: '2', name: 'Other Org' },
     ]);
-    await OrganizationPage({ params: { organizationId: '1' } });
+    const params = { organizationId: '1' };
+    await OrganizationPage({ params });
     expect(redirect).toHaveBeenCalledWith('/');
   });
 
   it('redirects to home if user has no organizations', async () => {
     (getUserOrganizations as jest.Mock).mockResolvedValue([]);
-    await OrganizationPage({ params: { organizationId: '1' } });
+    const params = { organizationId: '1' };
+    await OrganizationPage({ params });
     expect(redirect).toHaveBeenCalledWith('/');
   });
 
   it('displays organization dashboard cards', async () => {
-    render(await OrganizationPage({ params: { organizationId: '1' } }));
-    expect(screen.getByText('Members')).toBeInTheDocument();
-    expect(screen.getByText('Documents')).toBeInTheDocument();
-    expect(screen.getByText('Active Members')).toBeInTheDocument();
-    expect(screen.getByText('Compliance Score')).toBeInTheDocument();
+    const params = { organizationId: '1' };
+    const Component = await OrganizationPage({ params });
+    render(Component);
+
+    await waitFor(() => {
+      expect(screen.getByText('Members')).toBeInTheDocument();
+      expect(screen.getByText('Documents')).toBeInTheDocument();
+      expect(screen.getByText('Active Members')).toBeInTheDocument();
+      expect(screen.getByText('Compliance Score')).toBeInTheDocument();
+    });
   });
 });

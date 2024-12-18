@@ -33,7 +33,7 @@ describe('HomePage', () => {
 
     await HomePage();
 
-    expect(redirect).toHaveBeenCalledWith('/1');
+    expect(redirect).toHaveBeenCalledWith('/organizations/1');
   });
 
   it('shows organization selector if user has multiple organizations', async () => {
