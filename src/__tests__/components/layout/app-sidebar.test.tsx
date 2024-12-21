@@ -1,5 +1,6 @@
 import { AppSidebar } from '@/components/layout/app-sidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
+import { OrganizationProvider } from '@/providers/organization.provider';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { signOut } from 'next-auth/react';
@@ -25,7 +26,11 @@ jest.mock('next/navigation', () => ({
 }));
 
 const renderWithSession = (component: React.ReactNode) => {
-  return render(<SidebarProvider>{component}</SidebarProvider>);
+  return render(
+    <SidebarProvider>
+      <OrganizationProvider>{component}</OrganizationProvider>
+    </SidebarProvider>
+  );
 };
 
 describe('AppSidebar', () => {

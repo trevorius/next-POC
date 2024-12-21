@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useOrganization } from '@/providers/organization.provider';
 import { Building2, Check, ChevronDown } from 'lucide-react';
 import * as React from 'react';
 
@@ -18,9 +19,8 @@ type Organization = {
 
 export function OrganizationSwitcher() {
   const [organizations, setOrganizations] = React.useState<Organization[]>([]);
-  const [selectedOrg, setSelectedOrg] = React.useState<Organization | null>(
-    null
-  );
+  const [selectedOrg, setSelectedOrg] = useOrganization();
+
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
@@ -39,7 +39,7 @@ export function OrganizationSwitcher() {
     }
 
     loadOrganizations();
-  }, [selectedOrg]);
+  }, [selectedOrg, setSelectedOrg]);
 
   if (loading) {
     return (
@@ -66,7 +66,11 @@ export function OrganizationSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant='ghost' className='w-full justify-between'>
+        <Button
+          variant='ghost'
+          className='w-full justify-between'
+          role='button'
+        >
           <div className='flex items-center gap-2 truncate'>
             <Building2 className='h-4 w-4 shrink-0' />
             <span className='truncate'>
