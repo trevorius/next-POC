@@ -6,6 +6,25 @@ const compat = new FlatCompat({
   baseDirectory: import.meta.dirname,
 });
 
+// Custom plugin for Jest globals
+const requireJestGlobals = {
+  create(context) {
+    return {
+      Program(node) {
+        const source = context.getSourceCode();
+        const hasJestGlobals = source.text.includes("require('@jest/globals')");
+
+        if (!hasJestGlobals) {
+          context.report({
+            node,
+            message: "Test files must include require('@jest/globals')",
+          });
+        }
+      },
+    };
+  },
+};
+
 export default [
   {
     ...compat.config,
@@ -60,6 +79,7 @@ export default [
     },
     plugins: {
       '@typescript-eslint': typescript,
+      custom: { rules: { 'require-jest-globals': requireJestGlobals } },
     },
     rules: {
       ...typescript.configs['recommended'].rules,
@@ -67,6 +87,7 @@ export default [
       'no-undef': 'off',
       '@typescript-eslint/no-require-imports': 'off',
       'import/no-commonjs': 'off',
+      'custom/require-jest-globals': 'error',
     },
   },
 ];

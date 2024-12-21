@@ -4,6 +4,8 @@ import { OrganizationProvider } from '@/providers/organization.provider';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { signOut } from 'next-auth/react';
+const { expect, describe, it } = require('@jest/globals');
+
 // Mock next-auth
 jest.mock('next-auth/react', () => ({
   signOut: jest.fn(),

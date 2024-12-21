@@ -1,3 +1,5 @@
+const { expect, describe, it } = require('@jest/globals');
+
 import { prisma } from '@/lib/prisma';
 
 import { generateSalt, hashPassword } from '../../auth';

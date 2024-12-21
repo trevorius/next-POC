@@ -1,6 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { OrganizationProvider, useOrganization } from './organization.provider';
+const { expect, describe, it } = require('@jest/globals');
 
 describe('OrganizationProvider', () => {
   const wrapper = ({ children }: { children: ReactNode }) => (

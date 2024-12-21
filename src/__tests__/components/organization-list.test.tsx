@@ -2,6 +2,7 @@ import { deleteOrganization } from '@/app/actions/organization';
 import { OrganizationList } from '@/app/superadmin/organization/organization-list';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+const { expect, describe, it } = require('@jest/globals');
 
 // Mock the organization actions
 jest.mock('@/app/actions/organization', () => ({

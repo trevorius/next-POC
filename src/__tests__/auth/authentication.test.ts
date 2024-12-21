@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const { expect, describe, it } = require('@jest/globals');
 import { prismaMock } from '@/lib/__mocks__/prisma';
 
 // Mock next-auth
