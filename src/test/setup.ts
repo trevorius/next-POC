@@ -31,6 +31,18 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
+// Mock ResizeObserver
+class ResizeObserverMock {
+  observe = jest.fn();
+  unobserve = jest.fn();
+  disconnect = jest.fn();
+}
+
+global.ResizeObserver = ResizeObserverMock;
+
+// Mock scrollIntoView
+Element.prototype.scrollIntoView = jest.fn();
+
 // Mock headers
 jest.mock('next/headers', () => ({
   headers: () => new Headers(),

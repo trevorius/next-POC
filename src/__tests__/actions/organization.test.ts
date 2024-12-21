@@ -4,8 +4,8 @@ import {
   getOrganizations,
 } from '@/app/actions/organization';
 import { auth } from '@/auth';
+import { createOrFindAccount } from '@/lib/auth/createAccount';
 import { prisma } from '@/lib/prisma';
-import { words } from '@/lib/words';
 
 // Mock auth and prisma
 jest.mock('@/auth');
@@ -25,6 +25,10 @@ jest.mock('@/lib/prisma', () => ({
       deleteMany: jest.fn(),
     },
   },
+}));
+
+jest.mock('@/lib/auth/createAccount', () => ({
+  createOrFindAccount: jest.fn(),
 }));
 
 describe('Organization Server Actions', () => {
@@ -54,6 +58,13 @@ describe('Organization Server Actions', () => {
       ownerEmail: 'owner@example.com',
       ownerName: 'Test Owner',
     };
+    // createOrFindAccount mocks to return a user
+    (createOrFindAccount as jest.Mock).mockResolvedValue({
+      id: '1',
+      email: mockOrganizationData.ownerEmail,
+      name: mockOrganizationData.ownerName,
+      password: 'password',
+    });
 
     it('should throw error if user is not super admin', async () => {
       (auth as jest.Mock).mockResolvedValue(mockNonSuperAdminSession);
@@ -89,16 +100,7 @@ describe('Organization Server Actions', () => {
       // Verify organization creation
       expect(result.organization).toEqual(mockOrganization);
       expect(prisma.organization.create).toHaveBeenCalled();
-      expect(prisma.user.create).toHaveBeenCalled();
       expect(prisma.organizationMember.create).toHaveBeenCalled();
-
-      // Verify password format
-      expect(result.temporaryPassword).toMatch(/^[a-z]+-[a-z]+-[a-z]+$/);
-      const passwordParts = result.temporaryPassword.split('-');
-      expect(passwordParts).toHaveLength(3);
-      passwordParts.forEach((word) => {
-        expect(words).toContain(word);
-      });
     });
   });
 

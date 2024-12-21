@@ -50,6 +50,14 @@ export function CreateOrganizationDialog() {
   }
 
   function handleClose(open: boolean) {
+    if (success) {
+      const confirmed = window.confirm(
+        'Make sure you have saved the temporary password before closing. Are you sure you want to close?'
+      );
+      if (!confirmed) {
+        return;
+      }
+    }
     if (!open) {
       setSuccess(null);
     }
@@ -61,49 +69,72 @@ export function CreateOrganizationDialog() {
       <DialogTrigger asChild>
         <Button>Create Organization</Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className='max-w-md'>
         <DialogHeader>
           <DialogTitle>
             {success ? 'Organization Created' : 'Create New Organization'}
           </DialogTitle>
           <DialogDescription>
             {success
-              ? 'The organization has been created successfully. Please save the temporary password.'
+              ? `The organization has been created successfully.${
+                  success.temporaryPassword
+                    ? ' Please save the temporary password before closing.'
+                    : ''
+                }`
               : 'Create a new organization and its owner account.'}
           </DialogDescription>
         </DialogHeader>
 
         {success ? (
-          <div className='space-y-4'>
-            <div className='space-y-2'>
-              <Label>Organization Name</Label>
+          <div className='grid gap-6 py-4'>
+            <div className='grid gap-2'>
+              <Label className='font-semibold'>Organization Name</Label>
               <div className='rounded-md bg-muted px-3 py-2'>
                 {success.organization.name}
               </div>
             </div>
-            <div className='space-y-2'>
-              <Label>Owner Email</Label>
+            <div className='grid gap-2'>
+              <Label className='font-semibold'>Owner Email</Label>
               <div className='rounded-md bg-muted px-3 py-2'>
                 {success.ownerEmail}
               </div>
             </div>
-            <div className='space-y-2'>
-              <Label>Temporary Password</Label>
-              <div className='rounded-md bg-muted px-3 py-2 font-mono'>
-                {success.temporaryPassword}
+            {success.temporaryPassword && (
+              <div className='grid gap-2'>
+                <Label className='font-semibold'>Temporary Password</Label>
+                <div className='relative'>
+                  <div className='rounded-md bg-muted px-3 py-2 font-mono break-all'>
+                    {success.temporaryPassword}
+                  </div>
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    className='absolute right-2 top-1/2 -translate-y-1/2'
+                    onClick={() => {
+                      navigator.clipboard.writeText(success.temporaryPassword);
+                    }}
+                  >
+                    Copy
+                  </Button>
+                </div>
+                <p className='text-sm text-muted-foreground'>
+                  Please save this password and share it securely with the
+                  organization owner.
+                </p>
               </div>
-              <p className='text-sm text-muted-foreground'>
-                Please save this password and share it securely with the
-                organization owner.
-              </p>
-            </div>
+            )}
             <DialogFooter>
-              <Button onClick={() => setOpen(false)}>Close</Button>
+              <Button
+                onClick={() => handleClose(false)}
+                className='w-full sm:w-auto'
+              >
+                Close
+              </Button>
             </DialogFooter>
           </div>
         ) : (
-          <form onSubmit={onSubmit} className='space-y-4'>
-            <div className='space-y-2'>
+          <form onSubmit={onSubmit} className='grid gap-6 py-4'>
+            <div className='grid gap-2'>
               <Label htmlFor='name'>Organization Name</Label>
               <Input
                 id='name'
@@ -112,7 +143,7 @@ export function CreateOrganizationDialog() {
                 required
               />
             </div>
-            <div className='space-y-2'>
+            <div className='grid gap-2'>
               <Label htmlFor='ownerName'>Owner Name</Label>
               <Input
                 id='ownerName'
@@ -121,7 +152,7 @@ export function CreateOrganizationDialog() {
                 required
               />
             </div>
-            <div className='space-y-2'>
+            <div className='grid gap-2'>
               <Label htmlFor='ownerEmail'>Owner Email</Label>
               <Input
                 id='ownerEmail'
@@ -132,7 +163,11 @@ export function CreateOrganizationDialog() {
               />
             </div>
             <DialogFooter>
-              <Button type='submit' disabled={loading}>
+              <Button
+                type='submit'
+                disabled={loading}
+                className='w-full sm:w-auto'
+              >
                 {loading ? 'Creating...' : 'Create'}
               </Button>
             </DialogFooter>

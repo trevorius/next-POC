@@ -1,9 +1,8 @@
 'use server';
 
 import { auth } from '@/auth';
-import { generateSalt, hashPassword } from '@/lib/auth';
+import { createOrFindAccount } from '@/lib/auth/createAccount';
 import { prisma } from '@/lib/prisma';
-import { generatePassword } from '@/lib/words';
 
 interface CreateOrganizationData {
   name: string;
@@ -38,19 +37,21 @@ export async function createOrganization(
     },
   });
 
-  // Create owner account
-  const salt = generateSalt();
-  const tempPassword = generatePassword();
-  const hashedPassword = await hashPassword(tempPassword, salt);
+  // // Create owner account
+  // const salt = generateSalt();
+  // const tempPassword = generatePassword();
+  // const hashedPassword = await hashPassword(tempPassword, salt);
 
-  const user = await prisma.user.create({
-    data: {
-      email: ownerEmail,
-      name: ownerName,
-      salt,
-      password: hashedPassword,
-    },
-  });
+  // const user = await prisma.user.create({
+  //   data: {
+  //     email: ownerEmail,
+  //     name: ownerName,
+  //     salt,
+  //     password: hashedPassword,
+  //   },
+  // });
+
+  const user = await createOrFindAccount(ownerEmail, ownerName);
 
   // Create organization membership
   await prisma.organizationMember.create({
@@ -64,7 +65,7 @@ export async function createOrganization(
   return {
     organization,
     ownerEmail,
-    temporaryPassword: tempPassword,
+    temporaryPassword: user.password || '',
   };
 }
 
