@@ -10,7 +10,7 @@ describe('OrganizationProvider', () => {
 
   it('should provide null organization by default', () => {
     const { result } = renderHook(() => useOrganization(), { wrapper });
-    const [organization] = result.current;
+    const [organization] = result.current.organizationState;
     expect(organization).toBeNull();
   });
 
@@ -19,12 +19,30 @@ describe('OrganizationProvider', () => {
     const mockOrg = { id: '1', name: 'Test Org' };
 
     act(() => {
-      const [, setOrganization] = result.current;
+      const [, setOrganization] = result.current.organizationState;
       setOrganization(mockOrg);
     });
 
-    const [organization] = result.current;
+    const [organization] = result.current.organizationState;
     expect(organization).toEqual(mockOrg);
+  });
+
+  it('should provide null organization role by default', () => {
+    const { result } = renderHook(() => useOrganization(), { wrapper });
+    const [organizationRole] = result.current.organizationRoleState;
+    expect(organizationRole).toBeNull();
+  });
+
+  it('should update organization role when setOrganizationRole is called', () => {
+    const { result } = renderHook(() => useOrganization(), { wrapper });
+
+    act(() => {
+      const [, setOrganizationRole] = result.current.organizationRoleState;
+      setOrganizationRole('ADMIN');
+    });
+
+    const [organizationRole] = result.current.organizationRoleState;
+    expect(organizationRole).toBe('ADMIN');
   });
 });
 

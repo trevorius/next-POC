@@ -1,5 +1,6 @@
 'use client';
 
+import { getUserOrganizationRole } from '@/app/actions/organization';
 import { getUserOrganizations } from '@/app/actions/user';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,6 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useOrganization } from '@/providers/organization.provider';
 import { Building2, Check, ChevronDown } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import * as React from 'react';
 
 type Organization = {
@@ -18,27 +20,48 @@ type Organization = {
 };
 
 export function OrganizationSwitcher() {
+  const { data: session } = useSession();
   const [organizations, setOrganizations] = React.useState<Organization[]>([]);
-  const [selectedOrg, setSelectedOrg] = useOrganization();
+  const { organizationState, organizationRoleState } = useOrganization();
+  const [selectedOrg, setSelectedOrg] = organizationState;
+  const [, setOrganizationRole] = organizationRoleState;
 
   const [loading, setLoading] = React.useState(true);
 
-  React.useEffect(() => {
-    async function loadOrganizations() {
+  const fetchUserOrganizationRole = async () => {
+    if (selectedOrg) {
+      setLoading(true);
       try {
-        const orgs = await getUserOrganizations();
-        setOrganizations(orgs);
-        if (orgs.length > 0 && !selectedOrg) {
-          setSelectedOrg(orgs[0]);
-        }
+        const data = await getUserOrganizationRole(
+          selectedOrg.id,
+          session?.user?.id ?? ''
+        );
+        setOrganizationRole(data?.role ?? null);
+        setLoading(false);
       } catch (error) {
-        console.error('Failed to load organizations:', error);
-      } finally {
+        console.error('Failed to fetch user organization role:', error);
         setLoading(false);
       }
     }
+  };
 
+  async function loadOrganizations() {
+    setLoading(true);
+    try {
+      const orgs = await getUserOrganizations();
+      setOrganizations(orgs);
+      if (orgs.length > 0 && !selectedOrg) {
+        setSelectedOrg(orgs[0]);
+      }
+    } catch (error) {
+      console.error('Failed to load organizations:', error);
+    } finally {
+      setLoading(false);
+    }
+  }
+  React.useEffect(() => {
     loadOrganizations();
+    fetchUserOrganizationRole();
   }, [selectedOrg, setSelectedOrg]);
 
   if (loading) {

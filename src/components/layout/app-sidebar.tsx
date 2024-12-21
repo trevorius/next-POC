@@ -1,6 +1,7 @@
 'use client';
 
 import { OrganizationSwitcher } from '@/components/organization/organization-switcher';
+import { useOrganization } from '@/providers/organization.provider';
 import { Building2, LayoutDashboard, LogOut } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -25,6 +26,8 @@ export function AppSidebar() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const isSuperAdmin = session?.user?.isSuperAdmin;
+  const { organizationState, organizationRoleState } = useOrganization();
+  const [organizationRole] = organizationRoleState;
 
   const getInitials = (name: string) => {
     return name
@@ -145,7 +148,9 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
+      <SidebarSeparator />
+      {organizationRole?.toString()}
+      {organizationState[0]?.name}
       {session?.user && (
         <SidebarFooter
           className='border-t p-4 group-data-[collapsible=icon]:p-2'
