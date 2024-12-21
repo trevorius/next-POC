@@ -1,3 +1,4 @@
+const { expect, describe, it } = require('@jest/globals');
 import { generatePassword, words } from '@/lib/words';
 
 describe('Password Generation', () => {

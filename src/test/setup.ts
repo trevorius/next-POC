@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const { expect, describe, it } = require('@jest/globals');
+
 import '@testing-library/jest-dom';
 
 // Mock next/navigation

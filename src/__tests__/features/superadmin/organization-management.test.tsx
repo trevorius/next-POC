@@ -1,3 +1,5 @@
+const { expect, describe, it } = require('@jest/globals');
+
 import { getOrganizations } from '@/app/actions/organization';
 import OrganizationManagement from '@/app/superadmin/organization/page';
 import { auth } from '@/auth';

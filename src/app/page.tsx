@@ -1,6 +1,5 @@
 import { getUserOrganizations } from '@/app/actions/user';
 import { auth } from '@/auth';
-import { OrganizationSelector } from '@/components/organization-selector';
 import { redirect } from 'next/navigation';
 
 export default async function HomePage() {
@@ -28,7 +27,7 @@ export default async function HomePage() {
 
   // If user has exactly one organization, redirect to it
   if (organizations.length === 1) {
-    redirect(`/${organizations[0].id}`);
+    redirect(`/organizations/${organizations[0].id}`);
   }
 
   // If user has multiple organizations, show selector
@@ -39,7 +38,6 @@ export default async function HomePage() {
         <p className='mt-2 mb-4 text-muted-foreground'>
           Choose an organization to continue
         </p>
-        <OrganizationSelector />
       </div>
     </div>
   );

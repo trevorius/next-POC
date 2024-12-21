@@ -1,3 +1,4 @@
+const { expect, describe, it } = require('@jest/globals');
 import { getUserOrganizations } from '@/app/actions/user';
 import HomePage from '@/app/page';
 import { auth } from '@/auth';
@@ -33,7 +34,7 @@ describe('HomePage', () => {
 
     await HomePage();
 
-    expect(redirect).toHaveBeenCalledWith('/1');
+    expect(redirect).toHaveBeenCalledWith('/organizations/1');
   });
 
   it('shows organization selector if user has multiple organizations', async () => {

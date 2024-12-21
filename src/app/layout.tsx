@@ -1,7 +1,8 @@
 'use client';
 
 import { AppSidebar } from '@/components/layout/app-sidebar';
-import { cn } from '@/lib/utils';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { OrganizationProvider } from '@/providers/organization.provider';
 import { SessionProvider } from 'next-auth/react';
 import { Inter } from 'next/font/google';
 import './globals.css';
@@ -14,13 +15,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang='en'>
-      <body className={cn(inter.className, 'flex h-screen')}>
+    <html lang='en' className='h-full'>
+      <body className={`${inter.className} h-full`}>
         <SessionProvider>
-          <div className='w-64 border-r'>
-            <AppSidebar />
-          </div>
-          <main className='flex-1 overflow-y-auto p-8'>{children}</main>
+          <OrganizationProvider>
+            <SidebarProvider>
+              <div className='flex h-full w-full'>
+                <AppSidebar />
+                <main className='flex flex-col flex-1 min-h-0 w-full'>
+                  <div className='h-14 border-b px-6 flex items-center shrink-0'>
+                    <SidebarTrigger />
+                  </div>
+                  <div className='flex-1 overflow-y-auto p-8'>{children}</div>
+                </main>
+              </div>
+            </SidebarProvider>
+          </OrganizationProvider>
         </SessionProvider>
       </body>
     </html>

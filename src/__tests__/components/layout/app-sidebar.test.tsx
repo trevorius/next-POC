@@ -1,7 +1,10 @@
 import { AppSidebar } from '@/components/layout/app-sidebar';
+import { SidebarProvider } from '@/components/ui/sidebar';
+import { OrganizationProvider } from '@/providers/organization.provider';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { signOut } from 'next-auth/react';
+const { expect, describe, it } = require('@jest/globals');
 
 // Mock next-auth
 jest.mock('next-auth/react', () => ({
@@ -25,7 +28,11 @@ jest.mock('next/navigation', () => ({
 }));
 
 const renderWithSession = (component: React.ReactNode) => {
-  return render(<>{component}</>);
+  return render(
+    <SidebarProvider>
+      <OrganizationProvider>{component}</OrganizationProvider>
+    </SidebarProvider>
+  );
 };
 
 describe('AppSidebar', () => {
