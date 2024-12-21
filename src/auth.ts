@@ -1,55 +1,87 @@
+import { PrismaClient } from '@prisma/client';
 import NextAuth, { DefaultSession } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
+import { AuthUser, sanitizeUser, verifyPassword } from './lib/auth.utils';
 
 declare module 'next-auth' {
-  /**
-   * Returned by `auth`, `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
-   */
   interface Session {
-    user: {
-      /** The user's postal address. */
-      address: string;
-      /**
-       * By default, TypeScript merges new interface properties and overwrites existing ones.
-       * In this case, the default session user properties will be overwritten,
-       * with the new ones defined above. To keep the default session user properties,
-       * you need to add them back into the newly declared interface.
-       */
-    } & DefaultSession['user'];
+    user: DefaultSession['user'] & {
+      id: string;
+      isSuperAdmin: boolean;
+    };
   }
 }
 
+const prisma = new PrismaClient();
+
+interface LoginCredentials {
+  username: string;
+  password: string;
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  providers: [
-    Credentials({
-      credentials: {
-        username: { label: 'Username' },
-        password: { label: 'Password', type: 'password' },
-      },
-      async authorize(
-        credentials: Partial<Record<'username' | 'password', unknown>>
-      ) {
-        // Simple credentials check against environment variables
-        const isValid =
-          credentials?.username === process.env.AUTH_USERNAME &&
-          credentials?.password === process.env.AUTH_PASSWORD;
-
-        if (isValid) {
-          return {
-            id: '1',
-            name: credentials?.username as string,
-            email: `${credentials?.username as string}@example.com`,
-          };
-        }
-
-        return null;
-      },
-    }),
-  ],
   pages: {
     signIn: '/login',
   },
-  secret: process.env.AUTH_SECRET || 'your-development-secret-key',
+  providers: [
+    Credentials({
+      credentials: {
+        username: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
+      },
+      async authorize(credentials): Promise<AuthUser | null> {
+        if (!credentials?.username || !credentials?.password) {
+          throw new Error('Invalid credentials');
+        }
+
+        const { username, password } = credentials as LoginCredentials;
+
+        try {
+          const user = await prisma.user.findUnique({
+            where: { email: username },
+          });
+
+          if (!user) {
+            throw new Error('Invalid credentials');
+          }
+
+          const isValidPassword = verifyPassword(
+            password,
+            user.password,
+            user.salt
+          );
+
+          if (!isValidPassword) {
+            throw new Error('Invalid credentials');
+          }
+
+          return sanitizeUser(user);
+        } catch (error) {
+          if (error instanceof Error) {
+            throw new Error(error.message);
+          }
+          throw new Error('Authentication failed');
+        }
+      },
+    }),
+  ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.isSuperAdmin = (user as AuthUser).isSuperAdmin;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+        session.user.isSuperAdmin = token.isSuperAdmin as boolean;
+      }
+      return session;
+    },
+  },
+  secret: process.env.AUTH_SECRET,
   session: {
     strategy: 'jwt',
   },

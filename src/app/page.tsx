@@ -1,32 +1,46 @@
-import React from 'react';
-// import styles from './page.module.css';
+import { getUserOrganizations } from '@/app/actions/user';
+import { auth } from '@/auth';
+import { OrganizationSelector } from '@/components/organization-selector';
+import { redirect } from 'next/navigation';
 
-interface PokemonApiResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: Array<{
-    name: string;
-    url: string;
-  }>;
-}
+export default async function HomePage() {
+  const session = await auth();
 
-export default async function Home(): Promise<React.ReactElement> {
-  const response = await fetch('https://pokeapi.co/api/v2/pokemon', {
-    // cache: 'no-store',
-    // next: {
-    // revalidate: 10,
-    // },
-  });
-  const data: PokemonApiResponse = await response.json();
+  if (!session?.user) {
+    redirect('/login');
+  }
 
-  const asyncData = JSON.stringify(data);
+  const organizations = await getUserOrganizations();
 
+  // If user has no organizations, show message
+  if (organizations.length === 0) {
+    return (
+      <div className='flex h-full items-center justify-center'>
+        <div className='text-center'>
+          <h1 className='text-2xl font-bold'>No Organizations Available</h1>
+          <p className='mt-2 text-muted-foreground'>
+            You are not a member of any organizations.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // If user has exactly one organization, redirect to it
+  if (organizations.length === 1) {
+    redirect(`/${organizations[0].id}`);
+  }
+
+  // If user has multiple organizations, show selector
   return (
-    <div>
-      <h1 className='text-3xl font-bold'>Hello world!</h1>
-
-      <div>{asyncData}</div>
+    <div className='flex h-full items-center justify-center'>
+      <div className='text-center'>
+        <h1 className='text-2xl font-bold'>Select Your Organization</h1>
+        <p className='mt-2 mb-4 text-muted-foreground'>
+          Choose an organization to continue
+        </p>
+        <OrganizationSelector />
+      </div>
     </div>
   );
 }
