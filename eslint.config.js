@@ -9,7 +9,6 @@ const compat = new FlatCompat({
 export default [
   {
     ...compat.config,
-    // extends: ['next/core-web-vitals', 'next/typescript'],
     ignores: [
       'node_modules/**',
       '.next/**',
@@ -44,6 +43,30 @@ export default [
         'error',
         { allow: ['warn', 'error', 'info', 'debug', 'trace'] },
       ],
+    },
+  },
+  {
+    files: ['**/*.test.ts', '**/*.test.tsx', 'src/test/**/*'],
+    languageOptions: {
+      parser: typescriptParser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        ecmaFeatures: {
+          jsx: true,
+        },
+        project: './tsconfig.json',
+      },
+    },
+    plugins: {
+      '@typescript-eslint': typescript,
+    },
+    rules: {
+      ...typescript.configs['recommended'].rules,
+      '@typescript-eslint/no-var-requires': 'off',
+      'no-undef': 'off',
+      '@typescript-eslint/no-require-imports': 'off',
+      'import/no-commonjs': 'off',
     },
   },
 ];

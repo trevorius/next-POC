@@ -4,6 +4,8 @@ import '@testing-library/jest-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 import { OrganizationSwitcher } from './organization-switcher';
 
+const { expect, describe, it } = require('@jest/globals');
+
 // Mock the getUserOrganizations function
 jest.mock('@/app/actions/user', () => ({
   getUserOrganizations: jest.fn(),
