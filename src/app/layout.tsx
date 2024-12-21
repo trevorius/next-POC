@@ -1,43 +1,27 @@
-import { auth } from '@/auth';
-import { AppSidebar } from '@/components/layout/app-sidebar';
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { cookies } from 'next/headers';
+'use client';
 
+import { AppSidebar } from '@/components/layout/app-sidebar';
+import { cn } from '@/lib/utils';
+import { SessionProvider } from 'next-auth/react';
+import { Inter } from 'next/font/google';
 import './globals.css';
 
-export default async function RootLayout({
+const inter = Inter({ subsets: ['latin'] });
+
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
-  const cookieStore = await cookies();
-  const defaultOpen = cookieStore.has('sidebar:state');
-
-  // Determine user role
-  let userRole: 'SUPER_ADMIN' | 'OWNER' | 'USER' = 'USER';
-  if (session?.user?.isSuperAdmin) {
-    userRole = 'SUPER_ADMIN';
-  } else if (
-    session?.user &&
-    'organizationRole' in session.user &&
-    session.user.organizationRole === 'OWNER'
-  ) {
-    userRole = 'OWNER';
-  }
-
   return (
     <html lang='en'>
-      <body>
-        <SidebarProvider defaultOpen={defaultOpen}>
-          <div className='flex min-h-screen'>
-            <AppSidebar userRole={userRole} />
-            <main className='flex-1'>
-              <SidebarTrigger />
-              {children}
-            </main>
+      <body className={cn(inter.className, 'flex h-screen')}>
+        <SessionProvider>
+          <div className='w-64 border-r'>
+            <AppSidebar />
           </div>
-        </SidebarProvider>
+          <main className='flex-1 overflow-y-auto p-8'>{children}</main>
+        </SessionProvider>
       </body>
     </html>
   );
