@@ -1,5 +1,8 @@
 import { deleteOrganization } from '@/app/actions/organization';
-import { OrganizationList } from '@/app/superadmin/organization/organization-list';
+import {
+  OrganizationList,
+  OrganizationWithMembers,
+} from '@/app/superadmin/organization/organization-list';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 const { expect, describe, it } = require('@jest/globals');
@@ -10,7 +13,7 @@ jest.mock('@/app/actions/organization', () => ({
 }));
 
 describe('OrganizationList', () => {
-  const mockOrganizations = [
+  const mockOrganizations: OrganizationWithMembers[] = [
     {
       id: '1',
       name: 'Test Org 1',

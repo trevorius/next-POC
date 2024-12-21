@@ -25,7 +25,7 @@ import { Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-interface OrganizationWithMembers extends Organization {
+export interface OrganizationWithMembers extends Organization {
   members: (OrganizationMember & {
     user: {
       id: string;
