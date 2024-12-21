@@ -5,6 +5,8 @@ import { act, render, screen, waitFor } from '@testing-library/react';
 import { useSession } from 'next-auth/react';
 import { OrganizationSwitcher } from './organization-switcher';
 
+const { expect, describe, it } = require('@jest/globals');
+
 // Mock next-auth
 jest.mock('next-auth/react', () => ({
   useSession: jest.fn(),
