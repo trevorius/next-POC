@@ -4,19 +4,22 @@ const { expect, describe, it } = require('@jest/globals');
 import '@testing-library/jest-dom';
 
 // Mock next/navigation
-const useRouter = jest.fn();
-jest.mock('next/navigation', () => ({
-  redirect: jest.fn(),
-  useRouter: () => useRouter(),
-  headers: () => new Headers(),
-}));
-
-// Set default useRouter mock implementation
-useRouter.mockImplementation(() => ({
+const mockRouter = {
   refresh: jest.fn(),
   push: jest.fn(),
   replace: jest.fn(),
   back: jest.fn(),
+  prefetch: jest.fn(),
+};
+
+const useRouter = jest.fn(() => mockRouter);
+
+jest.mock('next/navigation', () => ({
+  useRouter,
+  usePathname: jest.fn(() => '/'),
+  useSearchParams: jest.fn(() => new URLSearchParams()),
+  redirect: jest.fn(),
+  headers: () => new Headers(),
 }));
 
 // Mock window.matchMedia
@@ -26,8 +29,8 @@ Object.defineProperty(window, 'matchMedia', {
     matches: false,
     media: query,
     onchange: null,
-    addListener: jest.fn(), // deprecated
-    removeListener: jest.fn(), // deprecated
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
     addEventListener: jest.fn(),
     removeEventListener: jest.fn(),
     dispatchEvent: jest.fn(),
@@ -66,9 +69,6 @@ jest.mock('@/auth', () => ({
   })),
 }));
 
-// Export for use in tests
-export { useRouter };
-
 // Mock next-auth
 jest.mock('next-auth', () => ({
   getServerSession: jest.fn(),
@@ -78,3 +78,17 @@ jest.mock('next-auth', () => ({
 jest.mock('next-auth/jwt', () => ({
   getToken: jest.fn(),
 }));
+
+// Mock next-auth/react
+jest.mock('next-auth/react', () => ({
+  useSession: jest.fn(() => ({
+    data: { user: { id: '1', name: 'Test User' } },
+    status: 'authenticated',
+  })),
+  getSession: jest.fn(() => null),
+  signIn: jest.fn(),
+  signOut: jest.fn(),
+}));
+
+// Export for use in tests
+export { mockRouter, useRouter };

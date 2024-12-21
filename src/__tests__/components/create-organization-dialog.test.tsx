@@ -1,7 +1,7 @@
 const { expect, describe, it } = require('@jest/globals');
 import { createOrganization } from '@/app/actions/organization';
 import { CreateOrganizationDialog } from '@/app/superadmin/organization/create-organization-dialog';
-import { useRouter } from '@/test/setup';
+import { mockRouter } from '@/test/setup';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -11,13 +11,6 @@ jest.mock('@/app/actions/organization', () => ({
 }));
 
 describe('CreateOrganizationDialog', () => {
-  const mockRouter = {
-    refresh: jest.fn(),
-    push: jest.fn(),
-    replace: jest.fn(),
-    back: jest.fn(),
-  };
-
   const mockResponse = {
     organization: {
       id: '1',
@@ -28,7 +21,6 @@ describe('CreateOrganizationDialog', () => {
   };
 
   beforeEach(() => {
-    useRouter.mockImplementation(() => mockRouter);
     jest.clearAllMocks();
   });
 
