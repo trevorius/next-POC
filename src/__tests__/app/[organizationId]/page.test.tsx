@@ -1,6 +1,6 @@
 const { expect, describe, it } = require('@jest/globals');
 import { getUserOrganizations } from '@/app/actions/user';
-import { getOrganizationData } from '@/app/organizations/[organizationId]/layout';
+import { getOrganizationData } from '@/app/organizations/[organizationId]/actions/organization.actions';
 import OrganizationPage from '@/app/organizations/[organizationId]/page';
 import { auth } from '@/auth';
 import { render, screen, waitFor } from '@testing-library/react';
@@ -37,9 +37,12 @@ jest.mock('next/navigation', () => ({
   redirect: jest.fn(),
 }));
 
-jest.mock('@/app/organizations/[organizationId]/layout', () => ({
-  getOrganizationData: jest.fn(),
-}));
+jest.mock(
+  '@/app/organizations/[organizationId]/actions/organization.actions',
+  () => ({
+    getOrganizationData: jest.fn(),
+  })
+);
 
 // Mock RequireOrgMembership component
 jest.mock('@/components/auth/RequireOrgMembership', () => ({

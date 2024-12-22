@@ -1,9 +1,9 @@
-import { getOrganizationData } from '@/app/organizations/[organizationId]/layout';
 import { auth } from '@/auth';
 import { RequireOrgMembership } from '@/components/auth/RequireOrgMembership';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import { cache } from 'react';
+import { getOrganizationData } from './actions/organization.actions';
 
 const getFullOrganizationData = cache(
   async (organizationId: string, userId: string) => {
