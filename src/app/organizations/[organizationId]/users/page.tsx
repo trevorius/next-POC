@@ -44,7 +44,7 @@ export default async function UsersPage({ params }: Props) {
         >
           <CreateUserButton
             orgId={organizationData.organizationId}
-            currentUserRole={organizationData.userRole || ''}
+            currentUserRole={organizationData.userRole ?? OrganizationRole.USER}
           />
         </RoleGuardian>
       </div>

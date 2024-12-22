@@ -1,5 +1,6 @@
 'use client';
 
+import { getManageableRoles } from '@/app/organizations/[organizationId]/helpers/roles.helper';
 import { createUser } from '@/app/organizations/[organizationId]/users/actions';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,19 +19,15 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { UserPlusIcon } from '@heroicons/react/24/outline';
+import { OrganizationRole } from '@prisma/client';
 import { useState } from 'react';
-
-const UserRole = {
-  USER: 'USER',
-  ADMIN: 'ADMIN',
-};
 
 export default function CreateUserButton({
   orgId,
   currentUserRole,
 }: {
   orgId: string;
-  currentUserRole: string;
+  currentUserRole: OrganizationRole;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [tempPassword, setTempPassword] = useState('');
@@ -41,6 +38,9 @@ export default function CreateUserButton({
       setTempPassword(result.tempPassword);
     }
   }
+
+  // Get available roles that the current user can manage
+  const availableRoles = getManageableRoles(currentUserRole);
 
   return (
     <>
@@ -59,6 +59,16 @@ export default function CreateUserButton({
             <form action={handleSubmit} className='space-y-4'>
               <input type='hidden' name='orgId' value={orgId} />
               <div className='space-y-2'>
+                <Label htmlFor='name'>Name</Label>
+                <Input
+                  id='name'
+                  type='text'
+                  name='name'
+                  required
+                  placeholder='Enter user name'
+                />
+              </div>
+              <div className='space-y-2'>
                 <Label htmlFor='email'>Email</Label>
                 <Input
                   id='email'
@@ -69,16 +79,19 @@ export default function CreateUserButton({
                 />
               </div>
 
-              {currentUserRole === 'OWNER' && (
+              {currentUserRole !== OrganizationRole.USER && (
                 <div className='space-y-2'>
                   <Label htmlFor='role'>Role</Label>
-                  <Select name='role' defaultValue={UserRole.USER}>
+                  <Select name='role' defaultValue={OrganizationRole.USER}>
                     <SelectTrigger>
                       <SelectValue placeholder='Select role' />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={UserRole.USER}>User</SelectItem>
-                      <SelectItem value={UserRole.ADMIN}>Admin</SelectItem>
+                      {availableRoles.map((role) => (
+                        <SelectItem key={role} value={role}>
+                          {role}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
