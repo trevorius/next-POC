@@ -1,22 +1,60 @@
-import { getUserOrganizations } from '@/app/actions/user';
 import { auth } from '@/auth';
 import { RequireOrgMembership } from '@/components/auth/RequireOrgMembership';
+import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
+import { cache } from 'react';
+
+const getOrganizationData = cache(
+  async (organizationId: string, userId: string) => {
+    return prisma.organization.findFirst({
+      where: {
+        id: organizationId,
+        members: {
+          some: {
+            userId,
+          },
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        members: {
+          select: {
+            role: true,
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
+        _count: {
+          select: {
+            members: true,
+          },
+        },
+      },
+    });
+  }
+);
 
 export default async function OrganizationPage({
   params,
 }: {
-  params: Promise<{ organizationId: string }>;
+  params: { organizationId: string };
 }) {
   const session = await auth();
-  const organizationId = (await params).organizationId;
-
+  const { organizationId } = await params;
   if (!session?.user) {
     redirect('/login');
   }
 
-  const organizations = await getUserOrganizations();
-  const organization = organizations.find((org) => org.id === organizationId);
+  const organization = await getOrganizationData(
+    organizationId,
+    session.user.id
+  );
 
   if (!organization) {
     redirect('/');
@@ -26,12 +64,14 @@ export default async function OrganizationPage({
     <RequireOrgMembership organizationId={organizationId}>
       <div className='space-y-8'>
         <h1 className='text-3xl font-bold tracking-tight'>
-          {organization?.name}
+          {organization.name}
         </h1>
         <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
           <div className='rounded-lg border bg-card p-6'>
             <h3 className='text-lg font-semibold'>Members</h3>
-            <p className='mt-2 text-3xl font-bold'>0</p>
+            <p className='mt-2 text-3xl font-bold'>
+              {organization._count.members}
+            </p>
             <p className='text-sm text-muted-foreground'>Total members</p>
           </div>
           <div className='rounded-lg border bg-card p-6'>

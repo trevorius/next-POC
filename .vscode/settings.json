@@ -1,12 +1,4 @@
 {
-  "jest.autoRun": {
-    "watch": true,
-    "onSave": "test-file"
-  },
-  "jest.showCoverageOnLoad": true,
+  "jest.runMode": "watch",
   "jest.jestCommandLine": "npm test --",
-  "jest.testExplorer": {
-    "enabled": true,
-    "showInlineError": true
-  }
 }

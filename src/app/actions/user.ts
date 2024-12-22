@@ -10,17 +10,6 @@ export async function getUserOrganizations() {
     return [];
   }
 
-  // // If user is super admin, return all organizations
-  // if (session.user.isSuperAdmin) {
-  //   return prisma.organization.findMany({
-  //     select: {
-  //       id: true,
-  //       name: true,
-  //     },
-  //   });
-  // }
-
-  // Otherwise, return organizations where user is a member
   const memberships = await prisma.organizationMember.findMany({
     where: {
       userId: session.user.id,
@@ -32,8 +21,12 @@ export async function getUserOrganizations() {
           name: true,
         },
       },
+      role: true,
     },
   });
 
-  return memberships.map((m) => m.organization);
+  return memberships.map((m) => ({
+    ...m.organization,
+    role: m.role,
+  }));
 }

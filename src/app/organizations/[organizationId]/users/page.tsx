@@ -1,9 +1,6 @@
-import { getUserOrganizationRole } from '@/app/actions/organization';
-import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { Membership } from '@/types/organization.types';
 import { OrganizationRole } from '@prisma/client';
-import { redirect } from 'next/navigation';
 import RoleGuardian from '../components/RoleGuardian';
 import CreateUserButton from './components/CreateUserButton';
 import UserManagementTable from './components/UserManagementTable';
@@ -24,44 +21,37 @@ async function getUsersWithRoles(orgId: string) {
   return members;
 }
 
-export default async function UsersPage({
-  params,
-}: {
-  params: Promise<{ organizationId: string }>;
-}) {
-  const { organizationId } = await params;
+type Props = {
+  params: { organizationId: string };
+};
 
-  const session = await auth();
-  if (!session) redirect('/auth/signin');
+export default async function UsersPage({ params }: Props) {
+  const { organizationData } = await (
+    await import('../layout')
+  ).generateMetadata({ params });
 
-  const userRole = await getUserOrganizationRole(
-    organizationId,
-    session.user.id
-  );
-  const { role } = userRole || {};
-
-  if (role !== OrganizationRole.OWNER && role !== OrganizationRole.ADMIN)
-    redirect('/');
-
-  const users = await getUsersWithRoles(organizationId);
+  const users = await getUsersWithRoles(organizationData.organizationId);
 
   return (
     <div className='container mx-auto py-8'>
       <div className='flex justify-between items-center mb-6'>
         <h1 className='text-2xl font-bold'>Organization Members</h1>
         <RoleGuardian
-          routeParams={{ organizationId }}
+          routeParams={{ organizationId: organizationData.organizationId }}
           variant='render'
-          userRole={role}
+          userRole={organizationData.userRole}
           roles={[OrganizationRole.OWNER, OrganizationRole.ADMIN]}
         >
-          <CreateUserButton orgId={organizationId} currentUserRole={role} />
+          <CreateUserButton
+            orgId={organizationData.organizationId}
+            currentUserRole={organizationData.userRole || ''}
+          />
         </RoleGuardian>
       </div>
       <UserManagementTable
         users={users}
-        currentUserRole={role}
-        orgId={organizationId}
+        currentUserRole={organizationData.userRole || ''}
+        orgId={organizationData.organizationId}
       />
     </div>
   );
