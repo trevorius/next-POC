@@ -77,7 +77,7 @@ export default function UserManagementTable({
                     roles={[OrganizationRole.OWNER, OrganizationRole.ADMIN]}
                   >
                     <RoleSelect
-                      currentRole={currentUserRole}
+                      currentRole={user.role}
                       userId={user.user.id}
                       orgId={orgId}
                     />
