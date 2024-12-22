@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { Membership } from '@/types/organization.types';
 import { OrganizationRole } from '@prisma/client';
 import { redirect } from 'next/navigation';
+import RoleGuardian from '../components/RoleGuardian';
 import CreateUserButton from './components/CreateUserButton';
 import UserManagementTable from './components/UserManagementTable';
 
@@ -48,11 +49,14 @@ export default async function UsersPage({
     <div className='container mx-auto py-8'>
       <div className='flex justify-between items-center mb-6'>
         <h1 className='text-2xl font-bold'>Organization Members</h1>
-        {(role === OrganizationRole.OWNER).toString()}
-        {(role === OrganizationRole.OWNER ||
-          role === OrganizationRole.ADMIN) && (
+        <RoleGuardian
+          routeParams={{ organizationId }}
+          variant='render'
+          userRole={role}
+          roles={[OrganizationRole.OWNER, OrganizationRole.ADMIN]}
+        >
           <CreateUserButton orgId={organizationId} currentUserRole={role} />
-        )}
+        </RoleGuardian>
       </div>
       <UserManagementTable
         users={users}
