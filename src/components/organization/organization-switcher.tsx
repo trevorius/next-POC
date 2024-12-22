@@ -7,12 +7,13 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useOrganization } from '@/providers/organization.provider';
 import { Building2, Check, ChevronDown } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 
 type Organization = {
@@ -27,6 +28,7 @@ export function OrganizationSwitcher() {
   const [selectedOrg, setSelectedOrg] = organizationState;
   const [, setOrganizationRole] = organizationRoleState;
   const router = useRouter();
+  const pathname = usePathname();
 
   const [loading, setLoading] = React.useState(true);
 
@@ -67,6 +69,11 @@ export function OrganizationSwitcher() {
   React.useEffect(() => {
     fetchUserOrganizationRole();
   }, [selectedOrg]);
+  React.useEffect(() => {
+    setTimeout(() => {
+      if (!pathname.includes('organizations')) setSelectedOrg(null);
+    }, 400);
+  }, [pathname]);
 
   if (loading) {
     return (
@@ -94,7 +101,7 @@ export function OrganizationSwitcher() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          variant='ghost'
+          variant={'ghost'}
           className='w-full justify-between'
           role='button'
         >
@@ -108,6 +115,7 @@ export function OrganizationSwitcher() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className='w-[--radix-dropdown-menu-trigger-width]'>
+        <DropdownMenuLabel>Organizations</DropdownMenuLabel>
         {organizations.map((org) => (
           <DropdownMenuItem
             key={org.id}
