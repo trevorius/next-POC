@@ -61,8 +61,10 @@ export function OrganizationSwitcher() {
   }
   React.useEffect(() => {
     loadOrganizations();
+  }, [session?.user?.id]);
+  React.useEffect(() => {
     fetchUserOrganizationRole();
-  }, [selectedOrg, setSelectedOrg, session?.user?.id]);
+  }, [selectedOrg]);
 
   if (loading) {
     return (
