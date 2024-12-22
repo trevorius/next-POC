@@ -105,11 +105,11 @@ export async function getUserOrganizationRole(
   userId: string
 ) {
   const session = await auth();
-  if (!session?.user?.isSuperAdmin) {
+  if (!session?.user?.id) {
     return null;
   }
   try {
-    return await prisma.organizationMember.findFirst({
+    const organizationMember = await prisma.organizationMember.findFirst({
       where: {
         organizationId,
         userId,
@@ -118,6 +118,8 @@ export async function getUserOrganizationRole(
         role: true,
       },
     });
+
+    return organizationMember;
   } catch (error) {
     console.error('Failed to get user organisation role:', error);
     throw new Error('Failed to get user organisation role');
