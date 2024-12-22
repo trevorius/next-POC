@@ -31,8 +31,11 @@ export function AppSidebar() {
   const [organizationRole] = organizationRoleState;
   const [organization] = organizationState;
 
-  const adminShow = organizationRole?.toString() === OrganizationRole.ADMIN;
   const ownerShow = organizationRole?.toString() === OrganizationRole.OWNER;
+  const adminShow =
+    organizationRole?.toString() === OrganizationRole.ADMIN || ownerShow;
+  const userShow =
+    organizationRole?.toString() === OrganizationRole.USER || adminShow;
 
   const getInitials = (name: string) => {
     return name
@@ -56,7 +59,7 @@ export function AppSidebar() {
       name: 'Users',
       href: `/organizations/${organization?.id}/users`,
       icon: Users,
-      show: ownerShow || adminShow,
+      show: userShow,
     },
     // owner/admin/user routes
   ];
@@ -181,7 +184,7 @@ export function AppSidebar() {
           <Button
             variant='ghost'
             className='w-full justify-start mt-4 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:mt-2'
-            onClick={() => signOut()}
+            onClick={() => signOut({ callbackUrl: '/login' })}
           >
             <LogOut className='mr-2 h-4 w-4 group-data-[collapsible=icon]:mr-0' />
             <span className='group-data-[collapsible=icon]:hidden'>Logout</span>

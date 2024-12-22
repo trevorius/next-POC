@@ -48,6 +48,9 @@ export default async function OrganizationLayout({
   if (!data) {
     redirect('/auth/signin');
   }
+  if (!data.userRole) {
+    redirect('/');
+  }
 
   return (
     <RoleGuardian

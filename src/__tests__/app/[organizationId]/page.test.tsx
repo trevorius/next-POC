@@ -1,15 +1,44 @@
 const { expect, describe, it } = require('@jest/globals');
 import { getUserOrganizations } from '@/app/actions/user';
+import { getOrganizationData } from '@/app/organizations/[organizationId]/layout';
 import OrganizationPage from '@/app/organizations/[organizationId]/page';
 import { auth } from '@/auth';
 import { render, screen, waitFor } from '@testing-library/react';
 import { redirect } from 'next/navigation';
+
+// Mock prisma
+jest.mock('@/lib/prisma', () => ({
+  prisma: {
+    organization: {
+      findFirst: jest.fn().mockResolvedValue({
+        id: '1',
+        name: 'Test Organization',
+        _count: {
+          members: 1,
+          documents: 0,
+        },
+      }),
+    },
+    organizationMember: {
+      findMany: jest.fn().mockResolvedValue([
+        {
+          id: '1',
+          role: 'OWNER',
+        },
+      ]),
+    },
+  },
+}));
 
 // Mock auth and user actions
 jest.mock('@/auth');
 jest.mock('@/app/actions/user');
 jest.mock('next/navigation', () => ({
   redirect: jest.fn(),
+}));
+
+jest.mock('@/app/organizations/[organizationId]/layout', () => ({
+  getOrganizationData: jest.fn(),
 }));
 
 // Mock RequireOrgMembership component
@@ -20,7 +49,11 @@ jest.mock('@/components/auth/RequireOrgMembership', () => ({
 }));
 
 describe('OrganizationPage', () => {
-  const mockOrg = { id: '1', name: 'Test Organization' };
+  const mockOrg = {
+    id: '1',
+    name: 'Test Organization',
+    members: [{ id: '1', role: 'OWNER', userId: '1' }],
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -31,10 +64,21 @@ describe('OrganizationPage', () => {
       },
     });
     (getUserOrganizations as jest.Mock).mockResolvedValue([mockOrg]);
+    (getOrganizationData as jest.Mock).mockResolvedValue({
+      id: '1',
+      name: 'Test Organization',
+      _count: {
+        members: 1,
+        documents: 0,
+      },
+    });
+  });
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it('displays organization name', async () => {
-    const params = Promise.resolve({ organizationId: '1' });
+    const params = { organizationId: '1' };
     const Component = await OrganizationPage({ params });
     render(Component);
 
@@ -45,29 +89,36 @@ describe('OrganizationPage', () => {
 
   it('redirects to login if user is not authenticated', async () => {
     (auth as jest.Mock).mockResolvedValue(null);
-    const params = Promise.resolve({ organizationId: '1' });
+    const params = { organizationId: '1' };
     await OrganizationPage({ params });
     expect(redirect).toHaveBeenCalledWith('/login');
   });
 
-  it('redirects to home if organization is not found', async () => {
-    (getUserOrganizations as jest.Mock).mockResolvedValue([
-      { id: '2', name: 'Other Org' },
-    ]);
-    const params = Promise.resolve({ organizationId: '1' });
-    await OrganizationPage({ params });
-    expect(redirect).toHaveBeenCalledWith('/');
-  });
+  it('redirects to home if organization is not found or user has no access', async () => {
+    // Clear all mocks
+    jest.clearAllMocks();
 
-  it('redirects to home if user has no organizations', async () => {
+    // Mock auth to return a valid user
+    (auth as jest.Mock).mockResolvedValue({
+      user: {
+        id: '1',
+        email: 'test@example.com',
+      },
+    });
+
+    // Mock both organization-related functions to return null/empty
     (getUserOrganizations as jest.Mock).mockResolvedValue([]);
-    const params = Promise.resolve({ organizationId: '1' });
+    (getOrganizationData as jest.Mock).mockResolvedValue(null);
+
+    const params = { organizationId: '10' };
     await OrganizationPage({ params });
+
+    // Verify redirect was called
     expect(redirect).toHaveBeenCalledWith('/');
   });
 
   it('displays organization dashboard cards', async () => {
-    const params = Promise.resolve({ organizationId: '1' });
+    const params = { organizationId: '1' };
     const Component = await OrganizationPage({ params });
     render(Component);
 

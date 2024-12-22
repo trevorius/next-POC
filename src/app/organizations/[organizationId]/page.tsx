@@ -1,10 +1,11 @@
+import { getOrganizationData } from '@/app/organizations/[organizationId]/layout';
 import { auth } from '@/auth';
 import { RequireOrgMembership } from '@/components/auth/RequireOrgMembership';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import { cache } from 'react';
 
-const getOrganizationData = cache(
+const getFullOrganizationData = cache(
   async (organizationId: string, userId: string) => {
     return prisma.organization.findFirst({
       where: {
@@ -51,9 +52,13 @@ export default async function OrganizationPage({
     redirect('/login');
   }
 
-  const organization = await getOrganizationData(
+  const organizationMember = await getOrganizationData(organizationId);
+  if (!organizationMember) {
+    redirect('/');
+  }
+  const organization = await getFullOrganizationData(
     organizationId,
-    session.user.id
+    session?.user?.id
   );
 
   if (!organization) {
@@ -64,13 +69,13 @@ export default async function OrganizationPage({
     <RequireOrgMembership organizationId={organizationId}>
       <div className='space-y-8'>
         <h1 className='text-3xl font-bold tracking-tight'>
-          {organization.name}
+          {organization?.name}
         </h1>
         <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
           <div className='rounded-lg border bg-card p-6'>
             <h3 className='text-lg font-semibold'>Members</h3>
             <p className='mt-2 text-3xl font-bold'>
-              {organization._count.members}
+              {organization?._count.members}
             </p>
             <p className='text-sm text-muted-foreground'>Total members</p>
           </div>
