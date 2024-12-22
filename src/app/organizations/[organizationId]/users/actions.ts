@@ -63,6 +63,42 @@ export async function deleteUser(userId: string, orgId: string) {
   return { success: true };
 }
 
+export async function updateUserRole(
+  userId: string,
+  orgId: string,
+  newRole: OrganizationRole
+) {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error('Unauthorized');
+  }
+  const userRole = await hasPermission(session.user.id, orgId, [
+    OrganizationRole.OWNER,
+    OrganizationRole.ADMIN,
+  ]);
+  if (!userRole) {
+    throw new Error('Unauthorized');
+  }
+  if (!canManageRole(userRole, newRole)) {
+    throw new Error('Unauthorized');
+  }
+
+  await prisma.organizationMember.update({
+    where: {
+      organizationId_userId: {
+        organizationId: orgId,
+        userId,
+      },
+    },
+    data: {
+      role: newRole,
+    },
+  });
+
+  revalidatePath(`/organization/${orgId}/users`);
+  return { success: true };
+}
+
 const hasPermission = async (
   userId: string,
   orgId: string,

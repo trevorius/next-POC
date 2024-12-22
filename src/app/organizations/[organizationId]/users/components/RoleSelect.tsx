@@ -9,6 +9,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { OrganizationRole } from '@prisma/client';
+import { updateUserRole } from '../actions';
 
 export default function RoleSelect({
   currentRole,
@@ -22,6 +23,7 @@ export default function RoleSelect({
   const handleRoleChange = async (newRole: string) => {
     // TODO: Implement role change logic with server action
     console.info('Role changed:', { userId, newRole, orgId });
+    await updateUserRole(userId, orgId, newRole as OrganizationRole);
   };
 
   // Determine which roles can be assigned based on the current user's role
