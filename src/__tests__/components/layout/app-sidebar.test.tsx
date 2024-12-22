@@ -25,6 +25,9 @@ jest.mock('next-auth/react', () => ({
 // Mock next/navigation
 jest.mock('next/navigation', () => ({
   usePathname: jest.fn(() => '/'),
+  useRouter: jest.fn(() => ({
+    push: jest.fn(),
+  })),
 }));
 
 const renderWithSession = (component: React.ReactNode) => {

@@ -12,6 +12,7 @@ import {
 import { useOrganization } from '@/providers/organization.provider';
 import { Building2, Check, ChevronDown } from 'lucide-react';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
 type Organization = {
@@ -25,6 +26,7 @@ export function OrganizationSwitcher() {
   const { organizationState, organizationRoleState } = useOrganization();
   const [selectedOrg, setSelectedOrg] = organizationState;
   const [, setOrganizationRole] = organizationRoleState;
+  const router = useRouter();
 
   const [loading, setLoading] = React.useState(true);
 
@@ -109,7 +111,10 @@ export function OrganizationSwitcher() {
         {organizations.map((org) => (
           <DropdownMenuItem
             key={org.id}
-            onClick={() => setSelectedOrg(org)}
+            onClick={() => {
+              setSelectedOrg(org);
+              router.push(`/organizations/${org.id}`);
+            }}
             className='cursor-pointer'
           >
             <Building2 className='mr-2 h-4 w-4 shrink-0' />
