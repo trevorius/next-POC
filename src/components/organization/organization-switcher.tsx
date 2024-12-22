@@ -72,6 +72,13 @@ export function OrganizationSwitcher() {
   React.useEffect(() => {
     setTimeout(() => {
       if (!pathname.includes('organizations')) setSelectedOrg(null);
+      else {
+        const organizationId = pathname.split('/')[2];
+        const organization = organizations.find(
+          (org) => org.id === organizationId
+        );
+        if (organization) setSelectedOrg(organization);
+      }
     }, 400);
   }, [pathname]);
 
