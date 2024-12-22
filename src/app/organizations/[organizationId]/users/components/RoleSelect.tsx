@@ -28,6 +28,7 @@ export default function RoleSelect({
   const canAssignOwner = currentRole === OrganizationRole.OWNER;
   const canAssignAdmin = currentRole === OrganizationRole.OWNER;
   const canAssignUser = !!currentRole;
+
   return (
     <Select onValueChange={handleRoleChange} defaultValue={currentRole}>
       <SelectTrigger className='w-[110px]'>

@@ -10,7 +10,9 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { TrashIcon } from '@heroicons/react/24/outline';
+import { OrganizationRole } from '@prisma/client';
 import { useState } from 'react';
+import { ClientRoleGuardian } from '../../components/ClientRoleGuardian';
 import DeleteUserDialog from './DeleteUserDialog';
 import RoleSelect from './RoleSelect';
 
@@ -33,9 +35,10 @@ export default function UserManagementTable({
   orgId,
 }: {
   users: User[];
-  currentUserRole: string;
+  currentUserRole?: OrganizationRole;
   orgId: string;
 }) {
+  if (!currentUserRole) return null;
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
@@ -63,17 +66,22 @@ export default function UserManagementTable({
                 <TableCell>{user.user.name}</TableCell>
                 <TableCell>{user.user.email}</TableCell>
                 <TableCell>
-                  {currentUserRole === 'OWNER' ? (
+                  <ClientRoleGuardian
+                    variant='render'
+                    fallback={
+                      <span className='capitalize'>
+                        {user.role.toLowerCase()}
+                      </span>
+                    }
+                    userRole={currentUserRole}
+                    roles={[OrganizationRole.OWNER, OrganizationRole.ADMIN]}
+                  >
                     <RoleSelect
-                      currentRole={user.role}
+                      currentRole={currentUserRole}
                       userId={user.user.id}
                       orgId={orgId}
                     />
-                  ) : (
-                    <span className='capitalize'>
-                      {user.role.toLowerCase()}
-                    </span>
-                  )}
+                  </ClientRoleGuardian>
                 </TableCell>
                 <TableCell>
                   {canManageUser(user.role) && (

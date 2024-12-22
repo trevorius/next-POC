@@ -50,7 +50,7 @@ export default async function UsersPage({ params }: Props) {
       </div>
       <UserManagementTable
         users={users}
-        currentUserRole={organizationData.userRole || ''}
+        currentUserRole={organizationData.userRole}
         orgId={organizationData.organizationId}
       />
     </div>
