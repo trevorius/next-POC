@@ -1,11 +1,14 @@
+import { getUserOrganizationRole } from '@/app/actions/organization';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { Membership } from '@/types/organization.types';
+import { OrganizationRole } from '@prisma/client';
 import { redirect } from 'next/navigation';
 import CreateUserButton from './components/CreateUserButton';
 import UserManagementTable from './components/UserManagementTable';
 
 async function getUsersWithRoles(orgId: string) {
-  return await prisma.organizationMember.findMany({
+  const members: Membership[] = await prisma.organizationMember.findMany({
     where: { organizationId: orgId },
     include: {
       user: {
@@ -17,45 +20,44 @@ async function getUsersWithRoles(orgId: string) {
       },
     },
   });
-}
-
-async function getUserRole(orgId: string, userId: string) {
-  const member = await prisma.organizationMember.findFirst({
-    where: {
-      organizationId: orgId,
-      userId: userId,
-    },
-  });
-  return member?.role;
+  return members;
 }
 
 export default async function UsersPage({
   params,
 }: {
-  params: Promise<{ orgId: string }>;
+  params: Promise<{ organizationId: string }>;
 }) {
-  const { orgId } = await params;
+  const { organizationId } = await params;
 
   const session = await auth();
   if (!session) redirect('/auth/signin');
 
-  const userRole = await getUserRole(orgId, session.user.id);
-  if (!userRole) redirect('/');
+  const userRole = await getUserOrganizationRole(
+    organizationId,
+    session.user.id
+  );
+  const { role } = userRole || {};
 
-  const users = await getUsersWithRoles(orgId);
+  if (role !== OrganizationRole.OWNER && role !== OrganizationRole.ADMIN)
+    redirect('/');
+
+  const users = await getUsersWithRoles(organizationId);
 
   return (
     <div className='container mx-auto py-8'>
       <div className='flex justify-between items-center mb-6'>
         <h1 className='text-2xl font-bold'>Organization Members</h1>
-        {(userRole === 'OWNER' || userRole === 'ADMIN') && (
-          <CreateUserButton orgId={orgId} currentUserRole={userRole} />
+        {(role === OrganizationRole.OWNER).toString()}
+        {(role === OrganizationRole.OWNER ||
+          role === OrganizationRole.ADMIN) && (
+          <CreateUserButton orgId={organizationId} currentUserRole={role} />
         )}
       </div>
       <UserManagementTable
         users={users}
-        currentUserRole={userRole}
-        orgId={orgId}
+        currentUserRole={role}
+        orgId={organizationId}
       />
     </div>
   );

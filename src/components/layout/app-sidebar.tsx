@@ -2,7 +2,8 @@
 
 import { OrganizationSwitcher } from '@/components/organization/organization-switcher';
 import { useOrganization } from '@/providers/organization.provider';
-import { Building2, LayoutDashboard, LogOut } from 'lucide-react';
+import { OrganizationRole } from '@prisma/client';
+import { Building2, LayoutDashboard, LogOut, Users } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -30,6 +31,9 @@ export function AppSidebar() {
   const [organizationRole] = organizationRoleState;
   const [organization] = organizationState;
 
+  const adminShow = organizationRole?.toString() === OrganizationRole.ADMIN;
+  const ownerShow = organizationRole?.toString() === OrganizationRole.OWNER;
+
   const getInitials = (name: string) => {
     return name
       .split(' ')
@@ -45,8 +49,15 @@ export function AppSidebar() {
       icon: LayoutDashboard,
       show: session?.user,
     },
+
     // owner routes
     // owner/admin routes
+    {
+      name: 'Users',
+      href: `/organizations/${organization?.id}/users`,
+      icon: Users,
+      show: ownerShow || adminShow,
+    },
     // owner/admin/user routes
   ];
   const SuperAdminNavigation = [
