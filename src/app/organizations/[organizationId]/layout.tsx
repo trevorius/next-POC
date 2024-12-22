@@ -5,11 +5,11 @@ import RoleGuardian from './components/RoleGuardian';
 
 type LayoutProps = {
   children: React.ReactNode;
-  params: { organizationId: string };
+  params: Promise<{ organizationId: string }>;
 };
 
 type MetadataProps = {
-  params: { organizationId: string };
+  params: Promise<{ organizationId: string }>;
 };
 
 export type OrganizationData = {

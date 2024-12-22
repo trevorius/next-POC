@@ -2,7 +2,8 @@
 import { useOrganization } from './organization.provider';
 
 export default function TestOrganizationContext() {
-  const [selectedOrg] = useOrganization();
+  const { organizationState } = useOrganization();
+  const [selectedOrg] = organizationState;
   return (
     <div className='bg-red-500'>
       <p>name: {selectedOrg?.name}</p>

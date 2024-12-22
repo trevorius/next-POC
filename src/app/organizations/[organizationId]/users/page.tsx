@@ -22,7 +22,7 @@ async function getUsersWithRoles(orgId: string) {
 }
 
 type Props = {
-  params: { organizationId: string };
+  params: Promise<{ organizationId: string }>;
 };
 
 export default async function UsersPage({ params }: Props) {

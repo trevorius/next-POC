@@ -44,7 +44,7 @@ const getFullOrganizationData = cache(
 export default async function OrganizationPage({
   params,
 }: {
-  params: { organizationId: string };
+  params: Promise<{ organizationId: string }>;
 }) {
   const session = await auth();
   const { organizationId } = await params;

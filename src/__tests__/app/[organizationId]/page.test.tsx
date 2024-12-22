@@ -81,7 +81,9 @@ describe('OrganizationPage', () => {
   });
 
   it('displays organization name', async () => {
-    const params = { organizationId: '1' };
+    const params: Promise<{ organizationId: string }> = Promise.resolve({
+      organizationId: '1',
+    });
     const Component = await OrganizationPage({ params });
     render(Component);
 
@@ -92,7 +94,9 @@ describe('OrganizationPage', () => {
 
   it('redirects to login if user is not authenticated', async () => {
     (auth as jest.Mock).mockResolvedValue(null);
-    const params = { organizationId: '1' };
+    const params: Promise<{ organizationId: string }> = Promise.resolve({
+      organizationId: '1',
+    });
     await OrganizationPage({ params });
     expect(redirect).toHaveBeenCalledWith('/login');
   });
@@ -113,7 +117,9 @@ describe('OrganizationPage', () => {
     (getUserOrganizations as jest.Mock).mockResolvedValue([]);
     (getOrganizationData as jest.Mock).mockResolvedValue(null);
 
-    const params = { organizationId: '10' };
+    const params: Promise<{ organizationId: string }> = Promise.resolve({
+      organizationId: '10',
+    });
     await OrganizationPage({ params });
 
     // Verify redirect was called
@@ -121,7 +127,9 @@ describe('OrganizationPage', () => {
   });
 
   it('displays organization dashboard cards', async () => {
-    const params = { organizationId: '1' };
+    const params: Promise<{ organizationId: string }> = Promise.resolve({
+      organizationId: '1',
+    });
     const Component = await OrganizationPage({ params });
     render(Component);
 
