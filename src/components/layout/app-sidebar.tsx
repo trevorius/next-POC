@@ -28,6 +28,7 @@ export function AppSidebar() {
   const isSuperAdmin = session?.user?.isSuperAdmin;
   const { organizationState, organizationRoleState } = useOrganization();
   const [organizationRole] = organizationRoleState;
+  const [organization] = organizationState;
 
   const getInitials = (name: string) => {
     return name
@@ -40,30 +41,27 @@ export function AppSidebar() {
   const OrganizationNavigation = [
     {
       name: 'Dashboard',
-      href: session?.user?.isSuperAdmin ? '/superadmin' : '/',
+      href: `/organizations/${organization?.id}`,
       icon: LayoutDashboard,
       show: session?.user,
     },
+    // owner routes
+    // owner/admin routes
+    // owner/admin/user routes
   ];
   const SuperAdminNavigation = [
+    {
+      name: 'Dashboard',
+      href: '/superadmin',
+      icon: LayoutDashboard,
+      show: session?.user,
+    },
     {
       name: 'Organizations',
       href: '/superadmin/organization',
       icon: Building2,
       show: session?.user?.isSuperAdmin,
     },
-    // {
-    //   name: 'Users',
-    //   href: '/superadmin/users',
-    //   icon: Users,
-    //   show: session?.user?.isSuperAdmin,
-    // },
-    // {
-    //   name: 'Settings',
-    //   href: '/settings',
-    //   icon: Settings,
-    //   show: session?.user?.isSuperAdmin,
-    // },
   ];
 
   return (
@@ -114,34 +112,36 @@ export function AppSidebar() {
             </SidebarGroup>
           </>
         )}
-        <SidebarGroup>
-          <SidebarGroupLabel>Organization</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {OrganizationNavigation.filter((item) => item.show).map(
-                (item) => {
-                  const Icon = item.icon;
-                  const isActive = pathname === item.href;
+        {organization && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Organization</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {OrganizationNavigation.filter((item) => item.show).map(
+                  (item) => {
+                    const Icon = item.icon;
+                    const isActive = pathname === item.href;
 
-                  return (
-                    <SidebarMenuItem key={item.name}>
-                      <SidebarMenuButton asChild isActive={isActive}>
-                        <Link
-                          href={item.href}
-                          className='flex items-center gap-3'
-                        >
-                          <Icon className='h-4 w-4' />
-                          <span>{item.name}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  );
-                }
-              )}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-        <SidebarSeparator />
+                    return (
+                      <SidebarMenuItem key={item.name}>
+                        <SidebarMenuButton asChild isActive={isActive}>
+                          <Link
+                            href={item.href}
+                            className='flex items-center gap-3'
+                          >
+                            <Icon className='h-4 w-4' />
+                            <span>{item.name}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  }
+                )}
+              </SidebarMenu>
+            </SidebarGroupContent>
+            <SidebarSeparator />
+          </SidebarGroup>
+        )}
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu></SidebarMenu>
@@ -149,8 +149,6 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarSeparator />
-      {organizationRole?.toString()}
-      {organizationState[0]?.name}
       {session?.user && (
         <SidebarFooter
           className='border-t p-4 group-data-[collapsible=icon]:p-2'
