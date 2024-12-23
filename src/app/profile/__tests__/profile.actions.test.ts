@@ -1,4 +1,5 @@
 import { auth } from '@/auth';
+import { hashPassword } from '@/lib/auth.utils';
 import { prisma } from '@/lib/prisma';
 import { updateProfile } from '../profile.actions';
 const { expect, it, describe, beforeEach } = require('@jest/globals');
@@ -15,6 +16,9 @@ jest.mock('@/lib/prisma', () => {
     },
   };
 });
+jest.mock('@/lib/auth.utils', () => ({
+  hashPassword: jest.fn(),
+}));
 jest.mock('next/cache', () => ({
   revalidatePath: jest.fn(),
 }));
@@ -157,6 +161,112 @@ describe('updateProfile', () => {
         where: { id: mockUser.id },
         data: { name: 'New Name' },
       });
+    });
+  });
+
+  describe('Password Updates', () => {
+    const mockHashedPassword = {
+      hash: 'hashed_password_123',
+      salt: 'salt_123',
+    };
+
+    beforeEach(() => {
+      (hashPassword as jest.Mock).mockResolvedValue(mockHashedPassword);
+    });
+
+    it('should validate minimum password length', async () => {
+      const result = await updateProfile({
+        field: 'password',
+        value: 'short',
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('Password must be at least 12 characters long');
+      expect(prisma.user.update).not.toHaveBeenCalled();
+      expect(hashPassword).not.toHaveBeenCalled();
+    });
+
+    it('should require lowercase letters', async () => {
+      const result = await updateProfile({
+        field: 'password',
+        value: 'ALLUPPERCASE123456',
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error).toBe(
+        'Password must contain at least one lowercase letter'
+      );
+      expect(prisma.user.update).not.toHaveBeenCalled();
+      expect(hashPassword).not.toHaveBeenCalled();
+    });
+
+    it('should require uppercase letters', async () => {
+      const result = await updateProfile({
+        field: 'password',
+        value: 'alllowercase123456',
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error).toBe(
+        'Password must contain at least one uppercase letter'
+      );
+      expect(prisma.user.update).not.toHaveBeenCalled();
+      expect(hashPassword).not.toHaveBeenCalled();
+    });
+
+    it('should successfully update password when all requirements are met', async () => {
+      const validPassword = 'ValidPassword123456';
+
+      (prisma.user.update as jest.Mock).mockResolvedValue({
+        ...mockUser,
+        password: mockHashedPassword.hash,
+        salt: mockHashedPassword.salt,
+      });
+
+      const result = await updateProfile({
+        field: 'password',
+        value: validPassword,
+      });
+
+      expect(result.success).toBe(true);
+      expect(hashPassword).toHaveBeenCalledWith(validPassword);
+      expect(prisma.user.update).toHaveBeenCalledWith({
+        where: { id: mockUser.id },
+        data: {
+          password: mockHashedPassword.hash,
+          salt: mockHashedPassword.salt,
+        },
+      });
+    });
+
+    it('should handle password hashing errors', async () => {
+      (hashPassword as jest.Mock).mockRejectedValue(
+        new Error('Hashing failed')
+      );
+
+      const result = await updateProfile({
+        field: 'password',
+        value: 'ValidPassword123456',
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('Hashing failed');
+      expect(prisma.user.update).not.toHaveBeenCalled();
+    });
+
+    it('should handle database errors during password update', async () => {
+      (hashPassword as jest.Mock).mockResolvedValue(mockHashedPassword);
+      (prisma.user.update as jest.Mock).mockRejectedValue(
+        new Error('Database error')
+      );
+
+      const result = await updateProfile({
+        field: 'password',
+        value: 'ValidPassword123456',
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('Database error');
     });
   });
 
