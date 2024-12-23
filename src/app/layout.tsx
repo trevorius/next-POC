@@ -2,6 +2,7 @@
 
 import { AppSidebar } from '@/components/layout/app-sidebar';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { Toaster } from '@/components/ui/toaster';
 import { OrganizationProvider } from '@/providers/organization.provider';
 import { SessionProvider } from 'next-auth/react';
 import { Inter } from 'next/font/google';
@@ -32,6 +33,7 @@ export default function RootLayout({
             </SidebarProvider>
           </OrganizationProvider>
         </SessionProvider>
+        <Toaster />
       </body>
     </html>
   );

@@ -31,6 +31,13 @@ export default auth(async (req) => {
     return NextResponse.next();
   }
 
+  // Protect profile routes
+  if (pathname.startsWith('/profile')) {
+    if (!req.auth?.user) {
+      return Response.redirect(new URL('/auth/login', nextUrl));
+    }
+  }
+
   return NextResponse.next();
 });
 
@@ -41,5 +48,6 @@ export const config = {
     '/api/superadmin/:path*',
     '/organizations/:organizationId/:path*',
     '/api/organizations/:organizationId/:path*',
+    '/profile/:path*',
   ],
 };
