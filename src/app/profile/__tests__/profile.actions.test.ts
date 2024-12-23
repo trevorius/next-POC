@@ -38,7 +38,7 @@ describe('updateProfile', () => {
     (auth as jest.Mock).mockResolvedValue(mockSession);
   });
 
-  describe('Authentication', () => {
+  describe('Authentication and Authorization', () => {
     it('should throw error if user is not authenticated', async () => {
       // Mock auth to return null session
       (auth as jest.Mock).mockResolvedValue(null);
@@ -65,6 +65,26 @@ describe('updateProfile', () => {
       expect(result.success).toBe(false);
       expect(result.error).toBe('Unauthorized');
       expect(prisma.user.update).not.toHaveBeenCalled();
+    });
+
+    it("should only update the authenticated user's profile", async () => {
+      // Mock successful update
+      (prisma.user.update as jest.Mock).mockResolvedValue({
+        ...mockUser,
+        name: 'New Name',
+      });
+
+      const result = await updateProfile({
+        field: 'name',
+        value: 'New Name',
+      });
+
+      expect(result.success).toBe(true);
+      // Verify that the update was performed with the session user's ID
+      expect(prisma.user.update).toHaveBeenCalledWith({
+        where: { id: mockSession.user.id }, // Must match session user ID
+        data: { name: 'New Name' },
+      });
     });
   });
 
