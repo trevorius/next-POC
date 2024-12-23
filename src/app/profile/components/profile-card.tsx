@@ -3,16 +3,21 @@
 import { updateProfile } from '@/app/profile/profile.actions';
 import { EditableField } from '@/components/ui-custom/editable-field';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { User } from '@prisma/client';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export function ProfileCard({ user }: { user: User | null }) {
   const { data: session, update: updateSession } = useSession();
   const router = useRouter();
   const { toast } = useToast();
+  const [pendingChanges, setPendingChanges] = useState<
+    Partial<Pick<User, 'name' | 'email'>>
+  >({});
 
   if (!user) return null;
 
@@ -24,28 +29,37 @@ export function ProfileCard({ user }: { user: User | null }) {
       .toUpperCase();
   };
 
-  const handleUpdateProfile = async (
-    field: 'name' | 'email',
-    value: string
-  ) => {
-    try {
-      const result = await updateProfile({ field, value });
+  const handleFieldChange = (field: 'name' | 'email', value: string) => {
+    setPendingChanges((prev) => ({ ...prev, [field]: value }));
+  };
 
-      if (!result.success) {
-        throw new Error(result.error);
+  const handleSaveChanges = async (changes = pendingChanges) => {
+    try {
+      // Update each changed field
+      for (const [field, value] of Object.entries(changes)) {
+        const result = await updateProfile({
+          field: field as 'name' | 'email',
+          value: value as string,
+        });
+
+        if (!result.success) {
+          throw new Error(result.error);
+        }
       }
 
-      // Update the session to reflect the changes
+      // Update the session to reflect all changes
       await updateSession({
         ...session,
-        user: { ...session?.user, [field]: value },
+        user: { ...session?.user, ...pendingChanges },
       });
+
+      // Clear pending changes
+      setPendingChanges({});
       // Refresh the page to show updated data
       router.refresh();
-
       toast({
         title: 'Profile updated',
-        description: `Your ${field} has been updated successfully.`,
+        description: 'Your profile has been updated successfully.',
       });
     } catch (error) {
       toast({
@@ -57,6 +71,8 @@ export function ProfileCard({ user }: { user: User | null }) {
       throw error;
     }
   };
+
+  const hasPendingChanges = Object.keys(pendingChanges).length > 0;
 
   return (
     <Card>
@@ -71,8 +87,12 @@ export function ProfileCard({ user }: { user: User | null }) {
             </AvatarFallback>
           </Avatar>
           <div>
-            <h3 className='font-semibold'>{user.name}</h3>
-            <p className='text-sm text-muted-foreground'>{user.email}</p>
+            <h3 className='font-semibold'>
+              {pendingChanges.name || user.name}
+            </h3>
+            <p className='text-sm text-muted-foreground'>
+              {pendingChanges.email || user.email}
+            </p>
           </div>
         </div>
 
@@ -80,14 +100,28 @@ export function ProfileCard({ user }: { user: User | null }) {
           <EditableField
             label='Name'
             value={user.name || ''}
-            onSave={(value) => handleUpdateProfile('name', value)}
+            onChange={async (e) =>
+              await handleFieldChange('name', e.target.value)
+            }
+            onSave={async (value) => await handleSaveChanges({ name: value })}
           />
           <EditableField
             label='Email'
             value={user.email || ''}
-            onSave={(value) => handleUpdateProfile('email', value)}
+            onChange={async (e) =>
+              await handleFieldChange('email', e.target.value)
+            }
+            onSave={async (value) => await handleSaveChanges({ email: value })}
           />
         </div>
+
+        {hasPendingChanges && (
+          <div className='flex justify-end'>
+            <Button onClick={() => handleSaveChanges(pendingChanges)}>
+              Save Changes
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

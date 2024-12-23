@@ -10,6 +10,7 @@ interface EditableFieldProps {
   label: string;
   value: string;
   onSave: (value: string) => Promise<void>;
+  onChange?: (value: React.ChangeEvent<HTMLInputElement>) => void;
   className?: string;
   type?: 'text' | 'password';
   placeholder?: string;
@@ -20,6 +21,7 @@ export function EditableField({
   label,
   value: initialValue,
   onSave,
+  onChange,
   className,
   type = 'text',
   placeholder,
@@ -92,6 +94,13 @@ export function EditableField({
     setShowPassword(!showPassword);
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(e.target.value);
+    if (onChange) {
+      onChange(e);
+    }
+  };
+
   return (
     <div className={cn('space-y-1.5', className)}>
       <Label>{label}</Label>
@@ -101,7 +110,7 @@ export function EditableField({
             <div className='relative flex-1'>
               <Input
                 value={value}
-                onChange={(e) => setValue(e.target.value)}
+                onChange={(e) => handleChange(e)}
                 onKeyDown={handleKeyDown}
                 disabled={isLoading}
                 autoFocus
