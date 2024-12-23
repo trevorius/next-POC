@@ -58,6 +58,7 @@ export default [
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': 'warn',
       'no-undef': 'off',
+      'no-debugger': 'error',
       'no-console': [
         'error',
         { allow: ['warn', 'error', 'info', 'debug', 'trace'] },
