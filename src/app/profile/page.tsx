@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { updateProfile } from './actions';
+import { updateProfile } from './profile.actions';
 
 export default function ProfilePage() {
   const { data: session, update: updateSession } = useSession();
